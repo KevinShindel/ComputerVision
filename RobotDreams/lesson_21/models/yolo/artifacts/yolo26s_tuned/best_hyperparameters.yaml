@@ -1,0 +1,21 @@
+# 1/40 iterations complete ✅ (209.22s)
+# Results saved to /kaggle/working/runs/detect/coin_detector/yolo26n_coin_tune
+# Best fitness=0.7019 observed at iteration 1
+# Best fitness metrics are {'metrics/precision(B)': 0.63948, 'metrics/recall(B)': 0.95089, 'metrics/mAP50(B)': 0.80183, 'metrics/mAP50-95(B)': 0.7019, 'val/box_loss': 0.65016, 'val/cls_loss': 0.68396, 'val/dfl_loss': 0.0064, 'fitness': 0.7019}
+# Best fitness model is /kaggle/working/runs/detect/coin_detector/train
+lr0: 0.005
+lrf: 0.05
+weight_decay: 0.0005
+mosaic: 0.9
+mixup: 0.0
+close_mosaic: 10
+degrees: 5.0
+scale: 0.5
+translate: 0.1
+shear: 0.0
+perspective: 0.0
+hsv_h: 0.015
+hsv_s: 0.7
+hsv_v: 0.4
+fliplr: 0.5
+flipud: 0.0
