@@ -8,7 +8,8 @@
 # Use this script to get the text graph representation (.pbtxt) of SSD-based
 # deep learning network trained in TensorFlow Object Detection API.
 # Then you can import it with a binary frozen graph (.pb) using readNetFromTensorflow() function.
-# See details and examples on the following wiki page: https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API
+# See details and examples on the
+# following wiki page: https://github.com/opencv/opencv/wiki/TensorFlow-Object-Detection-API
 import tensorflow as tf
 import argparse
 from math import sqrt
@@ -22,9 +23,12 @@ parser = argparse.ArgumentParser(description='Run this script to get a text grap
 parser.add_argument('--input', required=True, help='Path to frozen TensorFlow graph.')
 parser.add_argument('--output', required=True, help='Path to output text graph.')
 parser.add_argument('--num_classes', default=90, type=int, help='Number of trained classes.')
-parser.add_argument('--min_scale', default=0.2, type=float, help='Hyper-parameter of ssd_anchor_generator from config file.')
-parser.add_argument('--max_scale', default=0.95, type=float, help='Hyper-parameter of ssd_anchor_generator from config file.')
-parser.add_argument('--num_layers', default=6, type=int, help='Hyper-parameter of ssd_anchor_generator from config file.')
+parser.add_argument('--min_scale', default=0.2, type=float,
+                    help='Hyper-parameter of ssd_anchor_generator from config file.')
+parser.add_argument('--max_scale', default=0.95, type=float,
+                    help='Hyper-parameter of ssd_anchor_generator from config file.')
+parser.add_argument('--num_layers', default=6, type=int,
+                    help='Hyper-parameter of ssd_anchor_generator from config file.')
 parser.add_argument('--aspect_ratios', default=[1.0, 2.0, 0.5, 3.0, 0.333], type=float, nargs='+',
                     help='Hyper-parameter of ssd_anchor_generator from config file.')
 parser.add_argument('--image_width', default=300, type=int, help='Training images width.')
@@ -51,6 +55,7 @@ inpNames = ['image_tensor']
 outNames = ['num_detections', 'detection_scores', 'detection_boxes', 'detection_classes']
 graph_def = TransformGraph(graph_def, inpNames, outNames, ['sort_by_execution_order'])
 
+
 def getUnconnectedNodes():
     unconnected = []
     for node in graph_def.node:
@@ -60,7 +65,9 @@ def getUnconnectedNodes():
                 unconnected.remove(inp)
     return unconnected
 
+
 removedNodes = []
+
 
 # Detect unfused batch normalization nodes and fuse them.
 def fuse_batch_normalization():
@@ -73,8 +80,9 @@ def fuse_batch_normalization():
     # Add_1 <-- Mul_1, Sub_0
     nodesMap = {node.name: node for node in graph_def.node}
     subgraph = ['Add',
-        ['Mul', 'input', ['Mul', ['Rsqrt', ['Add', 'moving_variance', 'add_y']], 'gamma']],
-        ['Sub', 'beta', ['Mul', 'moving_mean', 'Mul_0']]]
+                ['Mul', 'input', ['Mul', ['Rsqrt', ['Add', 'moving_variance', 'add_y']], 'gamma']],
+                ['Sub', 'beta', ['Mul', 'moving_mean', 'Mul_0']]]
+
     def checkSubgraph(node, targetNode, inputs, fusedNodes):
         op = targetNode[0]
         if node.op == op and (len(node.input) >= len(targetNode) - 1):
@@ -82,7 +90,7 @@ def fuse_batch_normalization():
             for i, inpOp in enumerate(targetNode[1:]):
                 if isinstance(inpOp, list):
                     if not node.input[i] in nodesMap or \
-                       not checkSubgraph(nodesMap[node.input[i]], inpOp, inputs, fusedNodes):
+                            not checkSubgraph(nodesMap[node.input[i]], inpOp, inputs, fusedNodes):
                         return False
                 else:
                     inputs[inpOp] = node.input[i]
@@ -110,7 +118,9 @@ def fuse_batch_normalization():
     for node in nodesToRemove:
         graph_def.node.remove(node)
 
+
 fuse_batch_normalization()
+
 
 # Removes Identity nodes
 def removeIdentity():
@@ -125,6 +135,7 @@ def removeIdentity():
             if node.input[i] in identities:
                 node.input[i] = identities[node.input[i]]
 
+
 removeIdentity()
 
 # Remove extra nodes and attributes.
@@ -132,7 +143,7 @@ for i in reversed(range(len(graph_def.node))):
     op = graph_def.node[i].op
     name = graph_def.node[i].name
 
-    if (not op in keepOps) or name.startswith(prefixesToRemove):
+    if (op not in keepOps) or name.startswith(prefixesToRemove):
         if op != 'Const':
             removedNodes.append(name)
 
@@ -149,13 +160,14 @@ for node in graph_def.node:
             del node.input[i]
 
 # Connect input node to the first layer
-assert(graph_def.node[0].op == 'Placeholder')
+assert (graph_def.node[0].op == 'Placeholder')
 # assert(graph_def.node[1].op == 'Conv2D')
 weights = graph_def.node[1].input[0]
 for i in range(len(graph_def.node[1].input)):
     graph_def.node[1].input.pop()
 graph_def.node[1].input.append(graph_def.node[0].name)
 graph_def.node[1].input.append(weights)
+
 
 # Create SSD postprocessing head ###############################################
 
@@ -175,12 +187,14 @@ def tensorMsg(values):
         msg += '%s: %s ' % (field, str(value))
     return msg + '}'
 
+
 def addConstNode(name, values):
     node = NodeDef()
     node.name = name
     node.op = 'Const'
     text_format.Merge(tensorMsg(values), node.attr["value"])
     graph_def.node.extend([node])
+
 
 def addConcatNode(name, inputs, axisNodeName):
     concat = NodeDef()
@@ -190,6 +204,7 @@ def addConcatNode(name, inputs, axisNodeName):
         concat.input.append(inp)
     concat.input.append(axisNodeName)
     graph_def.node.extend([concat])
+
 
 addConstNode('concat/axis_flatten', [-1])
 addConstNode('PriorBox/concat/axis', [-2])

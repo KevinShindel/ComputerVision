@@ -1,8 +1,6 @@
 from pathlib import Path
 import cv2
-import numpy as np
 import tensorflow as tf
-
 
 TF_ID_TO_NAME = {
     1: "1 cent",
@@ -26,7 +24,7 @@ def detect_objects(image_bgr, detector, conf_threshold=0.30):
 
     outputs = detector(input_tensor)
 
-    boxes = outputs["detection_boxes"][0].numpy()        # [ymin, xmin, ymax, xmax]
+    boxes = outputs["detection_boxes"][0].numpy()  # [ymin, xmin, ymax, xmax]
     scores = outputs["detection_scores"][0].numpy()
     classes = outputs["detection_classes"][0].numpy().astype(int)
 
@@ -88,8 +86,8 @@ def main():
     image_path = repo_root / "course_work" / "data" / "test" / "euro_coins_example.jpg"
 
     # Example output of exporter_main_v2.py:
-    # ...\course_work\models\tf_detector\efficientdet_d0\exported\saved_model
-    saved_model_dir = repo_root / "course_work" / "models" / "tf_detector" / "efficientdet_d0" / "exported" / "saved_model"
+    saved_model_dir = (repo_root / "course_work" / "models" / "tf_detector" / "efficientdet_d0" / "exported" /
+                       "saved_model")
 
     detector = load_detector(saved_model_dir)
 

@@ -1,5 +1,5 @@
 import cv2
-from lesson_10.flow.kalman_filter import CVKalmanMotionModel
+from kalman_filter import CVKalmanMotionModel
 
 
 def clamp_point(pt, w, h):

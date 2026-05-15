@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 import tensorflow as tf
 
-
 TF_ID_TO_NAME = {
     1: "1 cent",
     2: "2 cent",
@@ -175,7 +174,8 @@ def main():
     repo_root = Path(r"C:\Users\username\Projects\Computer-Vision-v2")
     image_path = repo_root / "course_work" / "data" / "test" / "euro_coins_example.jpg"
 
-    detector_path = repo_root / "course_work" / "models" / "tf_detector" / "efficientdet_d0" / "exported" / "saved_model"
+    detector_path = (repo_root / "course_work" / "models" / "tf_detector" / "efficientdet_d0" / "exported" /
+                     "saved_model")
     classifier_path = repo_root / "course_work" / "models" / "tensorflow" / "weights" / "best_model.keras"
 
     detector = load_detector(detector_path)

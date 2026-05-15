@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 class OpenCVDnnFaceDetector:
     """
     OpenCV DNN face detector wrapper (SSD-style).
@@ -8,14 +9,14 @@ class OpenCVDnnFaceDetector:
     """
 
     def __init__(
-        self,
-        model_path: str,
-        config_path: str | None = None,
-        backend: int = cv2.dnn.DNN_BACKEND_DEFAULT,
-        target: int = cv2.dnn.DNN_TARGET_CPU,
-        input_size: tuple[int, int] = (640, 640),
-        mean: tuple[float, float, float] = (104.0, 177.0, 123.0),
-        swap_rb: bool = False,
+            self,
+            model_path: str,
+            config_path: str | None = None,
+            backend: int = cv2.dnn.DNN_BACKEND_DEFAULT,
+            target: int = cv2.dnn.DNN_TARGET_CPU,
+            input_size: tuple[int, int] = (640, 640),
+            mean: tuple[float, float, float] = (104.0, 177.0, 123.0),
+            swap_rb: bool = False,
     ):
         self.model_path = model_path
         self.config_path = config_path
@@ -37,11 +38,11 @@ class OpenCVDnnFaceDetector:
         self.out: list[tuple[int, int, int, int, float]] = []
 
     def __call__(
-        self,
-        bgr: np.ndarray,
-        conf_threshold: float = 0.2,
-        nms_threshold: float = 0.4,
-        use_nms: bool = True,
+            self,
+            bgr: np.ndarray,
+            conf_threshold: float = 0.2,
+            nms_threshold: float = 0.4,
+            use_nms: bool = True,
     ):
         h, w = bgr.shape[:2]
 
@@ -119,17 +120,19 @@ class OpenCVDnnFaceDetector:
     def get_total_observed(self):
         return len(self.out)
 
+
 class YunetFaceDetector:
     """
     YuNet (cv2.FaceDetectorYN) wrapper.
     Output format (per face): (x, y, w, h, confidence)
     """
+
     def __init__(
-        self,
-        model_path: str,
-        score_threshold: float = 0.5,
-        nms_threshold: float = 0.4,
-        top_k: int = 5000,
+            self,
+            model_path: str,
+            score_threshold: float = 0.5,
+            nms_threshold: float = 0.4,
+            top_k: int = 5000,
     ):
         self.model_path = model_path
         self.score_threshold = score_threshold
@@ -207,6 +210,7 @@ class YunetFaceDetector:
 
     def get_total_observed(self):
         return len(self.out)
+
 
 class HaarDetector:
 

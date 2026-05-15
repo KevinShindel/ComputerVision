@@ -4,25 +4,40 @@ from urllib.request import urlretrieve
 import cv2
 import matplotlib.pyplot as plt
 
+RAW_GITHUB_URL = 'https://raw.githubusercontent.com/'
+
 models = (
     # DASiamRPN model
     ('https://www.dropbox.com/s/rr1lk9355vzolqv/dasiamrpn_model.onnx?dl=1', 'models/dasiamrpn'),
     ('https://www.dropbox.com/s/999cqx5zrfi7w4p/dasiamrpn_kernel_r1.onnx?dl=1', 'models/dasiamrpn'),
     ('https://www.dropbox.com/s/qvmtszx5h339a0w/dasiamrpn_kernel_cls1.onnx?dl=1', 'models/dasiamrpn'),
     # NanoTrack model
-    ('https://raw.githubusercontent.com/HonglinChu/SiamTrackers/refs/heads/master/NanoTrack/models/nanotrackv2/nanotrack_head_sim.onnx', 'models/nanotrack'),
-    ('https://raw.githubusercontent.com/HonglinChu/SiamTrackers/refs/heads/master/NanoTrack/models/nanotrackv2/nanotrack_backbone_sim.onnx', 'models/nanotrack'),
+    ('https://raw.githubusercontent.com/HonglinChu/SiamTrackers/refs/heads/master/NanoTrack/models/'
+     'nanotrackv2/nanotrack_head_sim.onnx',
+     'models/nanotrack'),
+    ('https://raw.githubusercontent.com/HonglinChu/SiamTrackers/refs/heads/master/NanoTrack/models/'
+     'nanotrackv2/nanotrack_backbone_sim.onnx',
+     'models/nanotrack'),
     # ViTTrack model
-    ('https://media.githubusercontent.com/media/opencv/opencv_zoo/refs/heads/main/models/object_tracking_vittrack/object_tracking_vittrack_2023sep.onnx', 'models/vittrack'),
+    ('https://media.githubusercontent.com/media/opencv/opencv_zoo/refs/heads/main/models/'
+     'object_tracking_vittrack/object_tracking_vittrack_2023sep.onnx',
+     'models/vittrack'),
     # YuNet model
-    ('https://media.githubusercontent.com/media/opencv/opencv_zoo/refs/heads/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx', 'models/yunet'),
+    ('https://media.githubusercontent.com/media/opencv/opencv_zoo/refs/heads/main/models/'
+     'face_detection_yunet/face_detection_yunet_2023mar.onnx',
+     'models/yunet'),
     # OpenCVDnn model
-    ('https://raw.githubusercontent.com/spmallick/learnopencv/refs/heads/master/FaceDetectionComparison/models/deploy.prototxt', 'models/opencvdnn'),
-    ('https://raw.githubusercontent.com/spmallick/learnopencv/refs/heads/master/FaceDetectionComparison/models/res10_300x300_ssd_iter_140000_fp16.caffemodel', 'models/opencvdnn'),
+    ('https://raw.githubusercontent.com/spmallick/learnopencv/refs/heads/master/FaceDetectionComparison/models/'
+     'deploy.prototxt',
+     'models/opencvdnn'),
+    ('https://raw.githubusercontent.com/spmallick/learnopencv/refs/heads/master/FaceDetectionComparison/models/'
+     'res10_300x300_ssd_iter_140000_fp16.caffemodel',
+     'models/opencvdnn'),
     # FaceRecognizerSF
-    ('https://media.githubusercontent.com/media/opencv/opencv_zoo/refs/heads/main/models/face_recognition_sface/face_recognition_sface_2021dec.onnx', 'models/facerecognizer'),
+    ('https://media.githubusercontent.com/media/opencv/opencv_zoo/refs/heads/main/models/'
+     'face_recognition_sface/face_recognition_sface_2021dec.onnx',
+     'models/facerecognizer'),
 )
-
 
 images = [
     # TODO: find more images from https://github.com/opencv/opencv/tree/4.x/samples/data repo!
@@ -35,18 +50,20 @@ videos = [
     ('https://raw.githubusercontent.com/opencv/opencv/refs/heads/4.x/samples/data/vtest.avi', 'videos'),
 ]
 
+
 def fetch_data(urls):
     """ Fetches data from the given URLs and saves them to the specified directory."""
-    for idx, (url, path) in enumerate(urls): # TODO: make this async for better performance
+    for idx, (url, path) in enumerate(urls):  # TODO: make this async for better performance
         print(f'Processed {idx / len(urls) * 100:.2f}%: {url}')
         os.makedirs(path, exist_ok=True)
-        filename = os.path.basename(url.split('?')[0]) # Get the filename from the URL
+        filename = os.path.basename(url.split('?')[0])  # Get the filename from the URL
         save_path = os.path.join(path, filename)
         if not os.path.exists(save_path):
             print(f"Downloading {filename}...")
             urlretrieve(url, save_path)
         else:
             print(f"{filename} already exists. Skipping download.")
+
 
 def draw_rectangle(frame, bbox):
     p1 = (int(bbox[0]), int(bbox[1]))
@@ -87,6 +104,7 @@ def select_roi(frame) -> Sequence[float]:
     cv2.destroyWindow("Select ROI")
 
     return object_template
+
 
 if __name__ == "__main__":
     for batch in (models, images, videos):

@@ -1,8 +1,10 @@
 import cv2
 import os
 
+
 def callback(input):
     pass
+
 
 def canny_edge():
     root = os.getcwd()
@@ -11,7 +13,7 @@ def canny_edge():
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
     h, w, _ = img.shape
-    scale = 1/5
+    scale = 1 / 5
 
     heightScale = int(h * scale)
     widthScale = int(w * scale)
@@ -21,8 +23,8 @@ def canny_edge():
     win_name = 'canny'
 
     cv2.namedWindow(win_name)
-    cv2.createTrackbar('min_thres', win_name,0,1000, callback)
-    cv2.createTrackbar('max_thres', win_name,0,1000, callback)
+    cv2.createTrackbar('min_thres', win_name, 0, 1000, callback)
+    cv2.createTrackbar('max_thres', win_name, 0, 1000, callback)
 
     while True:
         if cv2.waitKey(1) == ord('q'):
@@ -33,6 +35,7 @@ def canny_edge():
         cv2.imshow(win_name, cannyEdge)
 
     cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     canny_edge()

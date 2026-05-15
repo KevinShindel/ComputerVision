@@ -152,6 +152,7 @@ def draw_stats(frame, counts, total_coins, total_cents):
 
     return frame
 
+
 def crop_coin(image_bgr, x, y, r, pad_ratio=0.15):
     x = int(round(x))
     y = int(round(y))
@@ -190,6 +191,7 @@ def preprocess_crop_for_model(crop_bgr, image_size=(128, 128), scale01=False):
         x = x / 255.0
 
     return x
+
 
 def predict_all_coins(image_path, model, image_size=(128, 128), scale01=False):
     image_bgr = cv2.imread(str(image_path))
@@ -243,6 +245,7 @@ def predict_all_coins(image_path, model, image_size=(128, 128), scale01=False):
 
     return image_bgr, predictions, counts, total_cents
 
+
 def draw_predictions(image_bgr, predictions, total_cents):
     out = image_bgr.copy()
 
@@ -278,6 +281,7 @@ def draw_predictions(image_bgr, predictions, total_cents):
 
     return out
 
+
 def resize_keep_aspect(img, out_size=800):
     """
     Center-crop to a square (based on min(h, w)) and resize to out_size x out_size.
@@ -299,6 +303,7 @@ def resize_keep_aspect(img, out_size=800):
     out = cv2.resize(cropped, (out_size, out_size), interpolation=interp)
     return out
 
+
 def recognize_coin(r: float, max_r: float):
     max_area = 3.14159 * (max_r ** 2)
     area = 3.14159 * (r ** 2)
@@ -311,10 +316,9 @@ def recognize_coin(r: float, max_r: float):
     return "unknown", 0, area
 
 
-
-
 def on_change(_):
     pass
+
 
 def smooth_circles(prev_circles, curr_circles, dist_threshold=35.0, alpha=0.85):
     if prev_circles is None or len(prev_circles) == 0:
@@ -349,7 +353,6 @@ def smooth_circles(prev_circles, curr_circles, dist_threshold=35.0, alpha=0.85):
     return np.array(smoothed, dtype=np.float32)
 
 
-
 def init_trackbars(controls_win):
     # Trackbars live in the controls window
     cv2.createTrackbar("dp_x10", controls_win, 12, 40, on_change)  # dp = 1.2 default
@@ -361,7 +364,7 @@ def init_trackbars(controls_win):
     cv2.createTrackbar("clipLimit", controls_win, 3, 5, on_change)  # max bigger than value!
 
 
-def detect_coins(img, controls_win = 'Control'):
+def detect_coins(img, controls_win='Control'):
     dp = cv2.getTrackbarPos("dp_x10", controls_win) / 10.0
     dp = max(dp, 1.0)
 

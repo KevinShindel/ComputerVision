@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 
+
 class CVKalmanMotionModel:
     """
     2D constant-velocity Kalman filter:

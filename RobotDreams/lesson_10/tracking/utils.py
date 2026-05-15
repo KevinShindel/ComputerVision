@@ -7,6 +7,7 @@ def drawRectangle(frame, bbox):
     p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
     cv2.rectangle(frame, p1, p2, (255, 0, 0), 2, 1)
 
+
 def displayRectangle(frame, bbox):
     plt.figure(figsize=(20, 10))
     frameCopy = frame.copy()
@@ -15,8 +16,10 @@ def displayRectangle(frame, bbox):
     plt.imshow(frameCopy)
     plt.axis("off")
 
+
 def drawText(frame, txt, location, color=(50, 170, 50)):
     cv2.putText(frame, txt, location, cv2.FONT_HERSHEY_SIMPLEX, 1, color, 3)
+
 
 def show_roi_instructions(frame, win_name="Instructions"):
     overlay = frame.copy()

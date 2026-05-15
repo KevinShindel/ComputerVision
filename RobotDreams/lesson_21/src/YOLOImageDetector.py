@@ -4,14 +4,16 @@ import cv2
 from ultralytics import YOLO
 import tkinter as tk
 
+
 def monitor_resolution():
     root = tk.Tk()
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
     return screen_width, screen_height
 
+
 def main():
-    course_work_dir = Path(__file__).resolve().parents[1]   # .../course_work
+    course_work_dir = Path(__file__).resolve().parents[1]  # .../course_work
     weights = course_work_dir / 'models' / 'yolo' / 'weights' / 'yolo26s_best.pt'
     test_img = course_work_dir / 'data' / 'test' / "euro_coins_example_2.jpg"
 
@@ -45,9 +47,9 @@ def main():
     save_img: bool = args.save
     verbose_lvl: int = args.verbose
 
-    eval_model = YOLO(str(weights)) # Load model
+    eval_model = YOLO(str(weights))  # Load model
 
-    results = eval_model.predict( # Evaluation
+    results = eval_model.predict(  # Evaluation
         source=str(img_path),
         show=False,
         save=save_img,
@@ -66,16 +68,16 @@ def main():
 
     screen_w, screen_h = monitor_resolution()
 
-    h,w,channel_nbr = annotated.shape
+    h, w, channel_nbr = annotated.shape
     # img get w of screen and adapt h
     h = h * (screen_w / w)
     w = screen_w
-    if h > screen_h: #if img h still too big
+    if h > screen_h:  # if img h still too big
         # img get h of screen and adapt w
         w = w * (screen_h / h)
         h = screen_h
-    w, h = w*0.9, h*0.9 # because you don't want it to be that big, right ?
-    w, h = int(w), int(h) # you need int for the cv2.resize
+    w, h = w * 0.9, h * 0.9  # because you don't want it to be that big, right ?
+    w, h = int(w), int(h)  # you need int for the cv2.resize
 
     annotated = cv2.resize(annotated, (w, h))
 
@@ -88,11 +90,12 @@ def main():
                 cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
 
     cv2.imshow(window_name, annotated)
-    cv2.waitKey(0)   # wait forever until a key is pressed
+    cv2.waitKey(0)  # wait forever until a key is pressed
     cv2.destroyAllWindows()
 
     if verbose_lvl:
         print("Saved to:", result.save_dir)
+
 
 if __name__ == '__main__':
     main()

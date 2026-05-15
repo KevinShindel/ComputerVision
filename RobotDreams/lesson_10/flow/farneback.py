@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 def farneback_flow(prev_bgr: np.ndarray, curr_bgr: np.ndarray,
                    pyr_scale: float = 0.5, levels: int = 3, winsize: int = 15,
                    iterations: int = 3, poly_n: int = 5, poly_sigma: float = 1.2,
@@ -23,6 +24,7 @@ def farneback_flow(prev_bgr: np.ndarray, curr_bgr: np.ndarray,
     )
     return flow
 
+
 def flow_to_hsv_bgr(flow: np.ndarray, clip_mag: float | None = None) -> np.ndarray:
     """
     Visualize flow as HSV:
@@ -42,6 +44,7 @@ def flow_to_hsv_bgr(flow: np.ndarray, clip_mag: float | None = None) -> np.ndarr
 
     return cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
+
 def draw_flow_arrows(bgr: np.ndarray, flow: np.ndarray, step: int = 16,
                      color: tuple[int, int, int] = (0, 255, 0)) -> np.ndarray:
     """
@@ -50,7 +53,7 @@ def draw_flow_arrows(bgr: np.ndarray, flow: np.ndarray, step: int = 16,
     h, w = bgr.shape[:2]
     vis = bgr.copy()
 
-    y, x = np.mgrid[step//2:h:step, step//2:w:step].astype(int)
+    y, x = np.mgrid[step // 2:h:step, step // 2:w:step].astype(int)
     fx = flow[y, x, 0]
     fy = flow[y, x, 1]
 
@@ -60,6 +63,7 @@ def draw_flow_arrows(bgr: np.ndarray, flow: np.ndarray, step: int = 16,
         cv2.arrowedLine(vis, (int(x0), int(y0)), (x1, y1), color, 1, tipLength=0.3)
 
     return vis
+
 
 # Example usage:
 if __name__ == "__main__":

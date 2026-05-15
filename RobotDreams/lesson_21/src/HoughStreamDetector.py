@@ -4,7 +4,6 @@ from datetime import datetime
 from src.utils import init_trackbars, detect_coins, recognize_coin
 
 
-
 def main():
     # Windows-friendly webcam opening
     cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
@@ -56,7 +55,6 @@ def main():
         cv2.putText(frame, f'Coins found: {total_coins}', (20, 70),
                     cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
 
-
         text_offset_x = 25
         text_offset_y = frame.shape[0] - 40
 
@@ -80,6 +78,7 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     main()

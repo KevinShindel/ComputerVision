@@ -9,7 +9,6 @@ better and more visual training monitoring.
 @author: janko
 """
 
-import numpy as np
 import tensorflow as tf
 from datetime import datetime
 from tensorflow.keras.layers import Conv2D, Dense, Flatten, Input, MaxPooling2D

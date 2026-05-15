@@ -8,7 +8,7 @@ from src.utils import init_trackbars, detect_coins, recognize_coin, resize_keep_
 
 
 def main():
-    course_work_dir = Path(__file__).resolve().parents[1]   # .../course_work
+    course_work_dir = Path(__file__).resolve().parents[1]  # .../course_work
     test_img = course_work_dir / 'data' / 'test' / "euro_coins_example.jpg"
 
     parser = ArgumentParser(
@@ -68,7 +68,6 @@ def main():
         cv2.putText(img, f'Coins found: {total_coins}', (20, 70),
                     cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
 
-
         text_offset_x = 25
         text_offset_y = img.shape[0] - 40
 
@@ -91,6 +90,7 @@ def main():
             continue
 
     cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     main()

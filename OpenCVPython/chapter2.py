@@ -2,6 +2,7 @@
 import cv2
 import numpy as np
 
+
 def resize_and_blur():
     img = cv2.imread('resources/Lenna.png')
 
@@ -12,14 +13,13 @@ def resize_and_blur():
     height = int(img.shape[0] * scale_percent / 100)
     dim = (width, height)
     img = cv2.resize(img, dim, interpolation=cv2.INTER_AREA)
-    kernel = np.ones((5,5), np.uint8)
+    kernel = np.ones((5, 5), np.uint8)
 
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     imgBlur = cv2.GaussianBlur(imgGray, (7, 7), 0)
     imgCanny = cv2.Canny(img, 200, 200)
     imgDialation = cv2.dilate(imgCanny, kernel, 1)
     imgEroded = cv2.erode(imgDialation, kernel, 1)
-
 
     cv2.imshow('Gray image', imgGray)
     cv2.imshow('Blur image', imgBlur)

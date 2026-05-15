@@ -2,7 +2,6 @@ from pathlib import Path
 import cv2
 import numpy as np
 import tensorflow as tf
-import matplotlib.pyplot as plt
 from collections import Counter
 
 mapping = {
@@ -26,6 +25,7 @@ coin_to_cents = {
     '1 Euro': 100,
     '2 Euro': 200,
 }
+
 
 def detect_coins_hough(image_bgr):
     # TODO: Try use R-CNN instead HoughCircles
@@ -51,7 +51,8 @@ def detect_coins_hough(image_bgr):
         return []
 
     circles = np.round(circles[0]).astype(int)
-    return circles.tolist()   # [[x, y, r], ...]
+    return circles.tolist()  # [[x, y, r], ...]
+
 
 def crop_coin(image_bgr, x, y, r, pad_ratio=0.15):
     pad = int(r * pad_ratio)
@@ -77,6 +78,7 @@ def crop_coin(image_bgr, x, y, r, pad_ratio=0.15):
 
     return crop
 
+
 def preprocess_crop_for_model(crop_bgr, image_size=(128, 128), scale01=False):
     crop_rgb = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2RGB)
     crop_rgb = cv2.resize(crop_rgb, image_size, interpolation=cv2.INTER_AREA)
@@ -88,8 +90,8 @@ def preprocess_crop_for_model(crop_bgr, image_size=(128, 128), scale01=False):
 
     return x
 
-def predict_all_coins(image_bgr, model, image_size=(128, 128), scale01=False):
 
+def predict_all_coins(image_bgr, model, image_size=(128, 128), scale01=False):
     circles = detect_coins_hough(image_bgr)
     if not circles:
         return image_bgr, [], Counter(), 0
@@ -135,6 +137,7 @@ def predict_all_coins(image_bgr, model, image_size=(128, 128), scale01=False):
 
     return image_bgr, predictions, counts, total_cents
 
+
 def draw_predictions(image_bgr, predictions, total_cents):
     out = image_bgr.copy()
 
@@ -153,6 +156,7 @@ def draw_predictions(image_bgr, predictions, total_cents):
                 (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 0), 2)
 
     return out
+
 
 def main():
     # Example usage
@@ -180,12 +184,11 @@ def main():
             print("Failed to read frame from webcam.")
             break
 
-
         image_bgr, predictions, counts, total_cents = predict_all_coins(
             frame,
             model,
             image_size=(128, 128),
-            scale01=False,   # change to True if training used x/255 outside the model
+            scale01=False,  # change to True if training used x/255 outside the model
         )
 
         annotated = draw_predictions(image_bgr, predictions, total_cents)
@@ -198,6 +201,7 @@ def main():
 
     cap.release()
     cv2.destroyAllWindows()
+
 
 if __name__ == '__main__':
     main()

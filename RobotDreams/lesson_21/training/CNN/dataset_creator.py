@@ -1,6 +1,7 @@
 import cv2
 import os
 
+
 def preprocessing(img, clipLimit=2.5):
     image_hsv = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
     hue, saturation, value = cv2.split(image_hsv)
@@ -39,7 +40,7 @@ def main():
 
                 crop = img[y1:y2, x1:x2]
 
-                file_to_save = cv2.resize(crop, (128,128), interpolation=cv2.INTER_AREA) # down scaling !
+                file_to_save = cv2.resize(crop, (128, 128), interpolation=cv2.INTER_AREA)  # down scaling !
                 # Preprocessing
                 file_to_save = preprocessing(file_to_save)
 
@@ -47,10 +48,11 @@ def main():
                 if not os.path.exists(cls_folder):
                     os.makedirs(cls_folder, True)
 
-                cur_number =  len(os.listdir(cls_folder)) + 1
+                cur_number = len(os.listdir(cls_folder)) + 1
                 file_name = f'{cur_number}.jpg'
                 path_to_save = os.path.join(cls_folder, file_name)
                 cv2.imwrite(path_to_save, file_to_save)
+
 
 if __name__ == '__main__':
     main()
