@@ -4,9 +4,9 @@ import numpy as np
 
 
 def resize_and_blur():
-    img = cv2.imread('resources/Lenna.png')
+    img = cv2.imread("resources/Lenna.png")
 
-    print('Original Dimensions : ', img.shape)
+    print("Original Dimensions : ", img.shape)
 
     scale_percent = 20  # percent of original size
     width = int(img.shape[1] * scale_percent / 100)
@@ -21,14 +21,14 @@ def resize_and_blur():
     imgDialation = cv2.dilate(imgCanny, kernel, 1)
     imgEroded = cv2.erode(imgDialation, kernel, 1)
 
-    cv2.imshow('Gray image', imgGray)
-    cv2.imshow('Blur image', imgBlur)
-    cv2.imshow('Canny image', imgCanny)
-    cv2.imshow('Dialation image', imgDialation)
-    cv2.imshow('Erroded image', imgEroded)
+    cv2.imshow("Gray image", imgGray)
+    cv2.imshow("Blur image", imgBlur)
+    cv2.imshow("Canny image", imgCanny)
+    cv2.imshow("Dialation image", imgDialation)
+    cv2.imshow("Erroded image", imgEroded)
 
     cv2.waitKey(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     resize_and_blur()

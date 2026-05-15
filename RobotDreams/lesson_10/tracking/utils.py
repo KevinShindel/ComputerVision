@@ -29,8 +29,12 @@ def show_roi_instructions(frame, win_name="Instructions"):
 
     # Draw a filled rectangle as a text background (top-left)
     cv2.rectangle(overlay, (10, 10), (980, 90), (0, 0, 0), thickness=-1)
-    cv2.putText(overlay, msg1, (25, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
-    cv2.putText(overlay, msg2, (25, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2)
+    cv2.putText(
+        overlay, msg1, (25, 45), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2
+    )
+    cv2.putText(
+        overlay, msg2, (25, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 255), 2
+    )
 
     cv2.imshow(win_name, overlay)
     cv2.waitKey(2000)  # show for ~0.7s (adjust or set to 0 to wait for a key)

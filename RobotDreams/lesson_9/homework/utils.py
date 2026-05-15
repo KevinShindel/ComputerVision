@@ -9,14 +9,14 @@ class OpenCVDnnFaceDetector:
     """
 
     def __init__(
-            self,
-            model_path: str,
-            config_path: str | None = None,
-            backend: int = cv2.dnn.DNN_BACKEND_DEFAULT,
-            target: int = cv2.dnn.DNN_TARGET_CPU,
-            input_size: tuple[int, int] = (640, 640),
-            mean: tuple[float, float, float] = (104.0, 177.0, 123.0),
-            swap_rb: bool = False,
+        self,
+        model_path: str,
+        config_path: str | None = None,
+        backend: int = cv2.dnn.DNN_BACKEND_DEFAULT,
+        target: int = cv2.dnn.DNN_TARGET_CPU,
+        input_size: tuple[int, int] = (640, 640),
+        mean: tuple[float, float, float] = (104.0, 177.0, 123.0),
+        swap_rb: bool = False,
     ):
         self.model_path = model_path
         self.config_path = config_path
@@ -38,11 +38,11 @@ class OpenCVDnnFaceDetector:
         self.out: list[tuple[int, int, int, int, float]] = []
 
     def __call__(
-            self,
-            bgr: np.ndarray,
-            conf_threshold: float = 0.2,
-            nms_threshold: float = 0.4,
-            use_nms: bool = True,
+        self,
+        bgr: np.ndarray,
+        conf_threshold: float = 0.2,
+        nms_threshold: float = 0.4,
+        use_nms: bool = True,
     ):
         h, w = bgr.shape[:2]
 
@@ -99,7 +99,7 @@ class OpenCVDnnFaceDetector:
 
     def draw_faces(self, rgb_img: np.ndarray):
         result = np.copy(rgb_img)
-        for (x, y, w, h, confidence) in self.out:
+        for x, y, w, h, confidence in self.out:
             color = tuple(int(v) for v in np.random.randint(0, 255, size=3))
             cv2.rectangle(result, (x, y), (x + w, y + h), color, 2)
             cv2.putText(
@@ -128,11 +128,11 @@ class YunetFaceDetector:
     """
 
     def __init__(
-            self,
-            model_path: str,
-            score_threshold: float = 0.5,
-            nms_threshold: float = 0.4,
-            top_k: int = 5000,
+        self,
+        model_path: str,
+        score_threshold: float = 0.5,
+        nms_threshold: float = 0.4,
+        top_k: int = 5000,
     ):
         self.model_path = model_path
         self.score_threshold = score_threshold
@@ -190,7 +190,7 @@ class YunetFaceDetector:
 
     def draw_faces(self, rgb_img: np.ndarray):
         result = np.copy(rgb_img)
-        for (x, y, w, h, confidence) in self.out:
+        for x, y, w, h, confidence in self.out:
             color = tuple(int(v) for v in np.random.randint(0, 255, size=3))
             cv2.rectangle(result, (x, y), (x + w, y + h), color, 2)
             cv2.putText(
@@ -235,7 +235,7 @@ class HaarDetector:
             scaleFactor=self.scaleFactor,
             minNeighbors=self.minNeighbors,
             minSize=minSize,
-            flags=cv2.CASCADE_SCALE_IMAGE
+            flags=cv2.CASCADE_SCALE_IMAGE,
         )
 
         # 3) Normalize to a python list of tuples
@@ -251,9 +251,11 @@ class HaarDetector:
         if self.img is None:
             raise RuntimeError("No image set. Call the detector first.")
         result = np.copy(self.img)
-        for (x, y, w, h) in self.out:
-            color = (int(np.random.randint(0, 255)),
-                     int(np.random.randint(0, 255)),
-                     int(np.random.randint(0, 255)))
+        for x, y, w, h in self.out:
+            color = (
+                int(np.random.randint(0, 255)),
+                int(np.random.randint(0, 255)),
+                int(np.random.randint(0, 255)),
+            )
             cv2.rectangle(result, (x, y), (x + w, y + h), color, 3)
         return result

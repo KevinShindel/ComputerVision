@@ -1,5 +1,6 @@
-from pathlib import Path
 from collections import Counter
+from pathlib import Path
+
 import cv2
 import numpy as np
 import tensorflow as tf
@@ -84,10 +85,12 @@ def detect_objects(image_bgr, detector, conf_threshold=0.30):
         if x2 <= x1 or y2 <= y1:
             continue
 
-        results.append({
-            "bbox": [x1, y1, x2, y2],
-            "detector_score": float(score),
-        })
+        results.append(
+            {
+                "bbox": [x1, y1, x2, y2],
+                "detector_score": float(score),
+            }
+        )
 
     return results
 
@@ -102,7 +105,9 @@ def classify_boxes(image_bgr, boxes, classifier, image_size=(128, 128), scale01=
         if crop.size == 0:
             continue
 
-        x_model = preprocess_crop_for_model(crop, image_size=image_size, scale01=scale01)
+        x_model = preprocess_crop_for_model(
+            crop, image_size=image_size, scale01=scale01
+        )
         crops.append(x_model)
         valid_items.append(item)
 
@@ -174,9 +179,23 @@ def main():
     repo_root = Path(r"C:\Users\username\Projects\Computer-Vision-v2")
     image_path = repo_root / "course_work" / "data" / "test" / "euro_coins_example.jpg"
 
-    detector_path = (repo_root / "course_work" / "models" / "tf_detector" / "efficientdet_d0" / "exported" /
-                     "saved_model")
-    classifier_path = repo_root / "course_work" / "models" / "tensorflow" / "weights" / "best_model.keras"
+    detector_path = (
+        repo_root
+        / "course_work"
+        / "models"
+        / "tf_detector"
+        / "efficientdet_d0"
+        / "exported"
+        / "saved_model"
+    )
+    classifier_path = (
+        repo_root
+        / "course_work"
+        / "models"
+        / "tensorflow"
+        / "weights"
+        / "best_model.keras"
+    )
 
     detector = load_detector(detector_path)
     classifier = load_classifier(classifier_path)

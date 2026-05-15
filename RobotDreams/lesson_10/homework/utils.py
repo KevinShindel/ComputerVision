@@ -1,5 +1,5 @@
-import numpy as np
 import cv2
+import numpy as np
 
 
 class CVKalmanMotionModel:
@@ -8,30 +8,28 @@ class CVKalmanMotionModel:
     state = [x, y, vx, vy]^T
     measurement = [x, y]^T
     """
-    def __init__(self, dt: float = 1.0, process_noise: float = 1e-2, meas_noise: float = 1e-1):
+
+    def __init__(
+        self, dt: float = 1.0, process_noise: float = 1e-2, meas_noise: float = 1e-1
+    ):
         self.dt = float(dt)
 
         self.kf = cv2.KalmanFilter(4, 2)
 
         # State transition A
         self.kf.transitionMatrix = np.array(
-            [[1, 0, self.dt, 0],
-             [0, 1, 0, self.dt],
-             [0, 0, 1, 0],
-             [0, 0, 0, 1]],
-            dtype=np.float32
+            [[1, 0, self.dt, 0], [0, 1, 0, self.dt], [0, 0, 1, 0], [0, 0, 0, 1]],
+            dtype=np.float32,
         )
 
         # Measurement matrix H
         self.kf.measurementMatrix = np.array(
-            [[1, 0, 0, 0],
-             [0, 1, 0, 0]],
-            dtype=np.float32
+            [[1, 0, 0, 0], [0, 1, 0, 0]], dtype=np.float32
         )
 
         # Noise covariances
-        self.kf.processNoiseCov = (process_noise * np.eye(4, dtype=np.float32))
-        self.kf.measurementNoiseCov = (meas_noise * np.eye(2, dtype=np.float32))
+        self.kf.processNoiseCov = process_noise * np.eye(4, dtype=np.float32)
+        self.kf.measurementNoiseCov = meas_noise * np.eye(2, dtype=np.float32)
 
         # Posteriori error covariance
         self.kf.errorCovPost = np.eye(4, dtype=np.float32)

@@ -8,11 +8,11 @@ def empty(*args, **kwargs):
 
 
 def cvtColor():
-    img = cv2.imread('resources/lambo.png')
+    img = cv2.imread("resources/lambo.png")
     imgHSV = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     imgStacked = np.hstack((img, imgHSV))
 
-    cv2.imshow('Stacked', imgStacked)
+    cv2.imshow("Stacked", imgStacked)
     cv2.waitKey(0)
 
 
@@ -57,13 +57,13 @@ def trackBar():
         # cv2.imshow('HSV Color Space', imgHsv)
         # cv2.imshow('Mask', mask)
         # cv2.imshow('Result', result)
-        cv2.imshow('Horizontal Stacking', hStack)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        cv2.imshow("Horizontal Stacking", hStack)
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
     cap.release()
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     trackBar()

@@ -34,7 +34,7 @@ while Alive:
     # Use OpenCV imshow(), display until 'q' key is pressed
     cv2.imshow(window4, coke_img)
     keypress = cv2.waitKey(1)
-    if keypress == ord('q'):
+    if keypress == ord("q"):
         Alive = False
 cv2.destroyWindow(window4)
 

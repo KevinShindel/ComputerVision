@@ -1,25 +1,24 @@
 from argparse import ArgumentParser
+from datetime import datetime
 from pathlib import Path
 
 import cv2
 import numpy as np
-from datetime import datetime
-from src.utils import init_trackbars, detect_coins, recognize_coin, resize_keep_aspect
+from src.utils import (detect_coins, init_trackbars, recognize_coin,
+                       resize_keep_aspect)
 
 
 def main():
     course_work_dir = Path(__file__).resolve().parents[1]  # .../course_work
-    test_img = course_work_dir / 'data' / 'test' / "euro_coins_example.jpg"
+    test_img = course_work_dir / "data" / "test" / "euro_coins_example.jpg"
 
     parser = ArgumentParser(
         prog=__name__,
-        description='YOLO Image Detector',
+        description="YOLO Image Detector",
     )
-    parser.add_argument('file_name',
-                        type=str,
-                        nargs='?',
-                        default=test_img,
-                        help='Path to image...')
+    parser.add_argument(
+        "file_name", type=str, nargs="?", default=test_img, help="Path to image..."
+    )
 
     # Parse arguments
     args = parser.parse_args()
@@ -62,28 +61,56 @@ def main():
         euros = total_money // 100
         cents = total_money % 100
 
-        cv2.putText(img, f'Total Euros: {euros}, cents: {cents}.', (20, 50),
-                    cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
+        cv2.putText(
+            img,
+            f"Total Euros: {euros}, cents: {cents}.",
+            (20, 50),
+            cv2.FONT_HERSHEY_DUPLEX,
+            0.5,
+            (0, 255, 255),
+            1,
+        )
 
-        cv2.putText(img, f'Coins found: {total_coins}', (20, 70),
-                    cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
+        cv2.putText(
+            img,
+            f"Coins found: {total_coins}",
+            (20, 70),
+            cv2.FONT_HERSHEY_DUPLEX,
+            0.5,
+            (0, 255, 255),
+            1,
+        )
 
         text_offset_x = 25
         text_offset_y = img.shape[0] - 40
 
-        cv2.putText(img, 'Press "s" for save result into file', (text_offset_x, text_offset_y),
-                    cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
+        cv2.putText(
+            img,
+            'Press "s" for save result into file',
+            (text_offset_x, text_offset_y),
+            cv2.FONT_HERSHEY_DUPLEX,
+            0.5,
+            (0, 255, 255),
+            1,
+        )
 
-        cv2.putText(img, 'Press "q" for close window', (text_offset_x, text_offset_y + 20),
-                    cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
+        cv2.putText(
+            img,
+            'Press "q" for close window',
+            (text_offset_x, text_offset_y + 20),
+            cv2.FONT_HERSHEY_DUPLEX,
+            0.5,
+            (0, 255, 255),
+            1,
+        )
 
         cv2.imshow(view_win, img)
 
         key = cv2.waitKey(1) & 0xFF
 
-        if key == ord('q') or key == 27:
+        if key == ord("q") or key == 27:
             break
-        elif key == ord('s'):
+        elif key == ord("s"):
             file_name = datetime.now().strftime("%Y%m%d_%H%M%S_%f") + ".jpg"
             cv2.imwrite(file_name, img)
         else:
@@ -92,5 +119,5 @@ def main():
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

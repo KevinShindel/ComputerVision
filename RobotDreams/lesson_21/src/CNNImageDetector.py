@@ -1,25 +1,24 @@
 from argparse import ArgumentParser
 from pathlib import Path
+
 import cv2
-import tensorflow as tf
 import matplotlib.pyplot as plt
-from src.utils import draw_predictions, predict_all_coins, init_trackbars
+import tensorflow as tf
+from src.utils import draw_predictions, init_trackbars, predict_all_coins
 
 
 def main():
     course_work_dir = Path(__file__).resolve().parents[1]  # .../course_work
-    weights = course_work_dir / 'models' / 'tensorflow' / 'weights' / 'best_model.keras'
-    test_img = course_work_dir / 'data' / 'test' / "euro_coins_example.jpg"
+    weights = course_work_dir / "models" / "tensorflow" / "weights" / "best_model.keras"
+    test_img = course_work_dir / "data" / "test" / "euro_coins_example.jpg"
 
     parser = ArgumentParser(
         prog=__name__,
-        description='CNN Image Detector',
+        description="CNN Image Detector",
     )
-    parser.add_argument('file_name',
-                        type=str,
-                        nargs='?',
-                        default=test_img,
-                        help='Path to image...')
+    parser.add_argument(
+        "file_name", type=str, nargs="?", default=test_img, help="Path to image..."
+    )
 
     # Parse arguments
     args = parser.parse_args()
@@ -29,7 +28,7 @@ def main():
     # Example usage
     model = tf.keras.models.load_model(weights, compile=False)
 
-    controls_win = 'Control'
+    controls_win = "Control"
     cv2.namedWindow(controls_win, cv2.WINDOW_NORMAL)
     init_trackbars(controls_win)
 
@@ -37,7 +36,7 @@ def main():
         img_path,
         model,
         image_size=(128, 128),
-        scale01=False,   # change to True if training used x/255 outside the model
+        scale01=False,  # change to True if training used x/255 outside the model
     )
 
     print("Detected coins:")
@@ -52,5 +51,5 @@ def main():
     plt.show()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -1,8 +1,9 @@
+import tkinter as tk
 from argparse import ArgumentParser
 from pathlib import Path
+
 import cv2
 from ultralytics import YOLO
-import tkinter as tk
 
 
 def monitor_resolution():
@@ -14,31 +15,35 @@ def monitor_resolution():
 
 def main():
     course_work_dir = Path(__file__).resolve().parents[1]  # .../course_work
-    weights = course_work_dir / 'models' / 'yolo' / 'weights' / 'yolo26s_best.pt'
-    test_img = course_work_dir / 'data' / 'test' / "euro_coins_example_2.jpg"
+    weights = course_work_dir / "models" / "yolo" / "weights" / "yolo26s_best.pt"
+    test_img = course_work_dir / "data" / "test" / "euro_coins_example_2.jpg"
 
     # Define Parser
     parser = ArgumentParser(
         prog=__name__,
-        description='YOLO Image Detector',
+        description="YOLO Image Detector",
     )
-    parser.add_argument('file_name',
-                        type=str,
-                        nargs='?',
-                        default=test_img,
-                        help='Path to image...')
+    parser.add_argument(
+        "file_name", type=str, nargs="?", default=test_img, help="Path to image..."
+    )
 
-    parser.add_argument('-s', '--save',
-                        default=False,
-                        type=bool,
-                        required=False,
-                        # action='save_image',
-                        help='Save final image ? ')
+    parser.add_argument(
+        "-s",
+        "--save",
+        default=False,
+        type=bool,
+        required=False,
+        # action='save_image',
+        help="Save final image ? ",
+    )
 
-    parser.add_argument('-v', '--verbose',
-                        default=0,
-                        required=False,
-                        help='Set up verbosity level (0, 1)')
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        default=0,
+        required=False,
+        help="Set up verbosity level (0, 1)",
+    )
 
     # Parse arguments
     args = parser.parse_args()
@@ -56,14 +61,14 @@ def main():
         save_txt=True,
         save_conf=True,
         project=str(course_work_dir),
-        name='output',
-        exist_ok=True
+        name="output",
+        exist_ok=True,
     )
 
     result = results[0]
     annotated = result.plot()
 
-    window_name = 'YOLO'
+    window_name = "YOLO"
     cv2.namedWindow(window_name, cv2.WINDOW_NORMAL)
 
     screen_w, screen_h = monitor_resolution()
@@ -86,8 +91,15 @@ def main():
     text_offset_x = 25
     text_offset_y = annotated.shape[0] - 40
 
-    cv2.putText(annotated, 'Press "q" for close window', (text_offset_x, text_offset_y + 20),
-                cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
+    cv2.putText(
+        annotated,
+        'Press "q" for close window',
+        (text_offset_x, text_offset_y + 20),
+        cv2.FONT_HERSHEY_DUPLEX,
+        0.5,
+        (0, 255, 255),
+        1,
+    )
 
     cv2.imshow(window_name, annotated)
     cv2.waitKey(0)  # wait forever until a key is pressed
@@ -97,5 +109,5 @@ def main():
         print("Saved to:", result.save_dir)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

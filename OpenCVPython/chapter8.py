@@ -1,12 +1,13 @@
 # Contours and shape detection
 import cv2
 import numpy as np
-
 from common import stack_images
 
 
 def get_contours(img, img_contour):
-    contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, hierarchy = cv2.findContours(
+        img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
+    )
     for cnt in contours:
         area = cv2.contourArea(cnt)
         if area > 500:
@@ -30,15 +31,21 @@ def get_contours(img, img_contour):
                 object_type = "None"
 
             cv2.rectangle(img_contour, (x, y), (x + w, y + h), (0, 255, 0), 2)
-            cv2.putText(img_contour, object_type,
-                        (x + (w // 2) - 10, y + (h // 2) - 10), cv2.FONT_HERSHEY_COMPLEX, 0.7,
-                        (0, 0, 0), 2)
+            cv2.putText(
+                img_contour,
+                object_type,
+                (x + (w // 2) - 10, y + (h // 2) - 10),
+                cv2.FONT_HERSHEY_COMPLEX,
+                0.7,
+                (0, 0, 0),
+                2,
+            )
     return img_contour
 
 
 def main():
 
-    path = 'Resources/shapes.png'
+    path = "Resources/shapes.png"
     img = cv2.imread(path)
     img_contour = img.copy()
 
@@ -48,12 +55,13 @@ def main():
     img_canny = get_contours(img_canny, img_contour)
 
     img_blank = np.zeros_like(img)
-    imgStack = stack_images(0.8, ([img, img_gray, img_blur],
-                                  [img_canny, img_contour, img_blank]))
+    imgStack = stack_images(
+        0.8, ([img, img_gray, img_blur], [img_canny, img_contour, img_blank])
+    )
 
     cv2.imshow("Stack", imgStack)
     cv2.waitKey(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -2,10 +2,17 @@ import cv2
 import numpy as np
 
 
-def farneback_flow(prev_bgr: np.ndarray, curr_bgr: np.ndarray,
-                   pyr_scale: float = 0.5, levels: int = 3, winsize: int = 15,
-                   iterations: int = 3, poly_n: int = 5, poly_sigma: float = 1.2,
-                   flags: int = 0) -> np.ndarray:
+def farneback_flow(
+    prev_bgr: np.ndarray,
+    curr_bgr: np.ndarray,
+    pyr_scale: float = 0.5,
+    levels: int = 3,
+    winsize: int = 15,
+    iterations: int = 3,
+    poly_n: int = 5,
+    poly_sigma: float = 1.2,
+    flags: int = 0,
+) -> np.ndarray:
     """
     Returns dense optical flow (H x W x 2) from prev -> curr, where flow[...,0]=dx, flow[...,1]=dy.
     """
@@ -13,14 +20,16 @@ def farneback_flow(prev_bgr: np.ndarray, curr_bgr: np.ndarray,
     curr_gray = cv2.cvtColor(curr_bgr, cv2.COLOR_BGR2GRAY)
 
     flow = cv2.calcOpticalFlowFarneback(
-        prev_gray, curr_gray, None,
+        prev_gray,
+        curr_gray,
+        None,
         pyr_scale=pyr_scale,
         levels=levels,
         winsize=winsize,
         iterations=iterations,
         poly_n=poly_n,
         poly_sigma=poly_sigma,
-        flags=flags
+        flags=flags,
     )
     return flow
 
@@ -45,19 +54,23 @@ def flow_to_hsv_bgr(flow: np.ndarray, clip_mag: float | None = None) -> np.ndarr
     return cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
 
 
-def draw_flow_arrows(bgr: np.ndarray, flow: np.ndarray, step: int = 16,
-                     color: tuple[int, int, int] = (0, 255, 0)) -> np.ndarray:
+def draw_flow_arrows(
+    bgr: np.ndarray,
+    flow: np.ndarray,
+    step: int = 16,
+    color: tuple[int, int, int] = (0, 255, 0),
+) -> np.ndarray:
     """
     Draw a sparse arrow field over an image.
     """
     h, w = bgr.shape[:2]
     vis = bgr.copy()
 
-    y, x = np.mgrid[step // 2:h:step, step // 2:w:step].astype(int)
+    y, x = np.mgrid[step // 2 : h : step, step // 2 : w : step].astype(int)
     fx = flow[y, x, 0]
     fy = flow[y, x, 1]
 
-    for (x0, y0, dx, dy) in zip(x.flatten(), y.flatten(), fx.flatten(), fy.flatten()):
+    for x0, y0, dx, dy in zip(x.flatten(), y.flatten(), fx.flatten(), fy.flatten()):
         x1 = int(round(x0 + dx))
         y1 = int(round(y0 + dy))
         cv2.arrowedLine(vis, (int(x0), int(y0)), (x1, y1), color, 1, tipLength=0.3)
@@ -67,7 +80,7 @@ def draw_flow_arrows(bgr: np.ndarray, flow: np.ndarray, step: int = 16,
 
 # Example usage:
 if __name__ == "__main__":
-    path = '../../video/people_walking.mp4'
+    path = "../../video/people_walking.mp4"
     cap = cv2.VideoCapture(path)  # or path to video file
     ok, prev = cap.read()
     if not ok:

@@ -1,4 +1,5 @@
 from pathlib import Path
+
 import cv2
 import tensorflow as tf
 
@@ -50,12 +51,14 @@ def detect_objects(image_bgr, detector, conf_threshold=0.30):
         if x2 <= x1 or y2 <= y1:
             continue
 
-        detections.append({
-            "bbox": [x1, y1, x2, y2],
-            "score": float(score),
-            "class_id": int(cls_id),
-            "class_name": TF_ID_TO_NAME.get(int(cls_id), str(cls_id)),
-        })
+        detections.append(
+            {
+                "bbox": [x1, y1, x2, y2],
+                "score": float(score),
+                "class_id": int(cls_id),
+                "class_name": TF_ID_TO_NAME.get(int(cls_id), str(cls_id)),
+            }
+        )
 
     return detections
 
@@ -86,8 +89,15 @@ def main():
     image_path = repo_root / "course_work" / "data" / "test" / "euro_coins_example.jpg"
 
     # Example output of exporter_main_v2.py:
-    saved_model_dir = (repo_root / "course_work" / "models" / "tf_detector" / "efficientdet_d0" / "exported" /
-                       "saved_model")
+    saved_model_dir = (
+        repo_root
+        / "course_work"
+        / "models"
+        / "tf_detector"
+        / "efficientdet_d0"
+        / "exported"
+        / "saved_model"
+    )
 
     detector = load_detector(saved_model_dir)
 
