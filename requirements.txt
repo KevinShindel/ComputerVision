@@ -11,7 +11,7 @@ pydot==4.0.1
 scikit-learn==1.8.0
 seaborn==0.13.2
 tensorflow==2.21.0
-tensorflow-datasets==4.9.9
+tensorflow-datasets==4.9.10
 tensorflow-hub==0.16.1
 tqdm==4.67.3
 ultralytics==8.4.43
