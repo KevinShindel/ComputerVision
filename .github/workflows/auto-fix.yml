@@ -5,6 +5,10 @@ on:
   schedule:
     - cron: '0 3 * * 1'  # weekly on Monday
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   autofix:
     runs-on: ubuntu-latest
@@ -26,7 +30,12 @@ jobs:
         run: |
           black .
           isort .
-          ruff check --fix .
+          ruff check --fix . || true
+
+      - name: Configure git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Create a PR with fixes
         uses: peter-evans/create-pull-request@v5
