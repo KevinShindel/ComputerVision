@@ -24,7 +24,9 @@ def pre_processing(img):
 def get_contours(img, img_contour):
     biggest = np.array([])
     max_area = 0
-    contours, hierarchy = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, hierarchy = cv2.findContours(
+        img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE
+    )
     for cnt in contours:
         area = cv2.contourArea(cnt)
         if area > 5000:
@@ -57,7 +59,9 @@ def get_warp(img, biggest):
     matrix = cv2.getPerspectiveTransform(pts1, pts2)
     img_output = cv2.warpPerspective(img, matrix, (widthImg, heightImg))
 
-    img_cropped = img_output[20:img_output.shape[0] - 20, 20:img_output.shape[1] - 20]
+    img_cropped = img_output[
+        20 : img_output.shape[0] - 20, 20 : img_output.shape[1] - 20
+    ]
     img_cropped = cv2.resize(img_cropped, (widthImg, heightImg))
 
     return img_cropped
@@ -73,10 +77,17 @@ def stack_images(scale, img_array):
         for x in range(0, rows):
             for y in range(0, cols):
                 if img_array[x][y].shape[:2] == img_array[0][0].shape[:2]:
-                    img_array[x][y] = cv2.resize(img_array[x][y], (0, 0), None, scale, scale)
+                    img_array[x][y] = cv2.resize(
+                        img_array[x][y], (0, 0), None, scale, scale
+                    )
                 else:
-                    img_array[x][y] = cv2.resize(img_array[x][y], (img_array[0][0].shape[1], img_array[0][0].shape[0]),
-                                                 None, scale, scale)
+                    img_array[x][y] = cv2.resize(
+                        img_array[x][y],
+                        (img_array[0][0].shape[1], img_array[0][0].shape[0]),
+                        None,
+                        scale,
+                        scale,
+                    )
                 if len(img_array[x][y].shape) == 2:
                     img_array[x][y] = cv2.cvtColor(img_array[x][y], cv2.COLOR_GRAY2BGR)
         image_blank = np.zeros((height, width, 3), np.uint8)
@@ -89,9 +100,13 @@ def stack_images(scale, img_array):
             if img_array[x].shape[:2] == img_array[0].shape[:2]:
                 img_array[x] = cv2.resize(img_array[x], (0, 0), None, scale, scale)
             else:
-                img_array[x] = cv2.resize(img_array[x],
-                                          (img_array[0].shape[1], img_array[0].shape[0]),
-                                          None, scale, scale)
+                img_array[x] = cv2.resize(
+                    img_array[x],
+                    (img_array[0].shape[1], img_array[0].shape[0]),
+                    None,
+                    scale,
+                    scale,
+                )
             if len(img_array[x].shape) == 2:
                 img_array[x] = cv2.cvtColor(img_array[x], cv2.COLOR_GRAY2BGR)
         hor = np.hstack(img_array)
@@ -109,17 +124,17 @@ def main():
         biggest = get_contours(img_thres, img_contour)
         if biggest.size != 0:
             img_warped = get_warp(img, biggest)
-            image_array = ([img_contour, img_warped])
+            image_array = [img_contour, img_warped]
             cv2.imshow("ImageWarped", img_warped)
         else:
-            image_array = ([img_contour, img])
+            image_array = [img_contour, img]
 
         stacked_images = stack_images(0.6, image_array)
         cv2.imshow("WorkFlow", stacked_images)
 
-        if cv2.waitKey(1) & 0xFF == ord('q'):
+        if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

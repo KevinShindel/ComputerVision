@@ -1,7 +1,8 @@
+from datetime import datetime
+
 import cv2
 import numpy as np
-from datetime import datetime
-from src.utils import init_trackbars, detect_coins, recognize_coin
+from src.utils import detect_coins, init_trackbars, recognize_coin
 
 
 def main():
@@ -49,28 +50,56 @@ def main():
         euros = total_money // 100
         cents = total_money % 100
 
-        cv2.putText(frame, f'Total Euros: {euros}, cents: {cents}.', (20, 50),
-                    cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
+        cv2.putText(
+            frame,
+            f"Total Euros: {euros}, cents: {cents}.",
+            (20, 50),
+            cv2.FONT_HERSHEY_DUPLEX,
+            0.5,
+            (0, 255, 255),
+            1,
+        )
 
-        cv2.putText(frame, f'Coins found: {total_coins}', (20, 70),
-                    cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
+        cv2.putText(
+            frame,
+            f"Coins found: {total_coins}",
+            (20, 70),
+            cv2.FONT_HERSHEY_DUPLEX,
+            0.5,
+            (0, 255, 255),
+            1,
+        )
 
         text_offset_x = 25
         text_offset_y = frame.shape[0] - 40
 
-        cv2.putText(frame, 'Press "s" for save result into file', (text_offset_x, text_offset_y),
-                    cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
+        cv2.putText(
+            frame,
+            'Press "s" for save result into file',
+            (text_offset_x, text_offset_y),
+            cv2.FONT_HERSHEY_DUPLEX,
+            0.5,
+            (0, 255, 255),
+            1,
+        )
 
-        cv2.putText(frame, 'Press "q" for close window', (text_offset_x, text_offset_y + 20),
-                    cv2.FONT_HERSHEY_DUPLEX, 0.5, (0, 255, 255), 1)
+        cv2.putText(
+            frame,
+            'Press "q" for close window',
+            (text_offset_x, text_offset_y + 20),
+            cv2.FONT_HERSHEY_DUPLEX,
+            0.5,
+            (0, 255, 255),
+            1,
+        )
 
         cv2.imshow(view_win, frame)
 
         key = cv2.waitKey(1) & 0xFF
 
-        if key == ord('q') or key == 27:
+        if key == ord("q") or key == 27:
             break
-        elif key == ord('s'):
+        elif key == ord("s"):
             file_name = datetime.now().strftime("%Y%m%d_%H%M%S_%f") + ".jpg"
             cv2.imwrite(file_name, frame)
         else:
@@ -80,5 +109,5 @@ def main():
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

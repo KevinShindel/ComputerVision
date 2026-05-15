@@ -1,6 +1,7 @@
-from pathlib import Path
 import hashlib
 import json
+from pathlib import Path
+
 import tensorflow as tf
 
 # Reuse the same 8 classes already used in:
@@ -41,11 +42,15 @@ def int64_feature(value):
 
 
 def int64_list_feature(values):
-    return tf.train.Feature(int64_list=tf.train.Int64List(value=[int(v) for v in values]))
+    return tf.train.Feature(
+        int64_list=tf.train.Int64List(value=[int(v) for v in values])
+    )
 
 
 def float_list_feature(values):
-    return tf.train.Feature(float_list=tf.train.FloatList(value=[float(v) for v in values]))
+    return tf.train.Feature(
+        float_list=tf.train.FloatList(value=[float(v) for v in values])
+    )
 
 
 def find_images(images_dir: Path):
@@ -74,13 +79,15 @@ def read_yolo_label_file(label_path: Path):
     annotations = []
     for line in raw.splitlines():
         cls_id, x_center, y_center, width, height = map(float, line.split())
-        annotations.append({
-            "cls_id": int(cls_id),
-            "x_center": x_center,
-            "y_center": y_center,
-            "width": width,
-            "height": height,
-        })
+        annotations.append(
+            {
+                "cls_id": int(cls_id),
+                "x_center": x_center,
+                "y_center": y_center,
+                "width": width,
+                "height": height,
+            }
+        )
     return annotations
 
 

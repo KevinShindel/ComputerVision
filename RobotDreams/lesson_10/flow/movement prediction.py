@@ -56,12 +56,14 @@ def track_and_draw(video_path: str, seconds_ahead: float = 3.0):
 
     # Placeholder: you already have ROI + TrackerNano.
     ok, frame = cap.read()
-    object_template = cv2.selectROI("Select ROI", frame, showCrosshair=True, fromCenter=False)
+    object_template = cv2.selectROI(
+        "Select ROI", frame, showCrosshair=True, fromCenter=False
+    )
     cv2.destroyWindow("Select ROI")
 
     # You just need to produce per-frame bbox = (x, y, w, h) or None.
-    backbone = '../../models/nanotrack_backbone_sim.onnx'
-    neckhead = '../../models/nanotrack_head_sim.onnx'
+    backbone = "../../models/nanotrack_backbone_sim.onnx"
+    neckhead = "../../models/nanotrack_head_sim.onnx"
 
     params = cv2.TrackerNano_Params()
     params.backbone = str(backbone)
@@ -101,7 +103,9 @@ def track_and_draw(video_path: str, seconds_ahead: float = 3.0):
                 kf.predict()
                 kf.update(cx, cy)
 
-            cv2.rectangle(frame, (int(x), int(y)), (int(x + bw), int(y + bh)), (0, 255, 0), 2)
+            cv2.rectangle(
+                frame, (int(x), int(y)), (int(x + bw), int(y + bh)), (0, 255, 0), 2
+            )
             cv2.circle(frame, (int(cx), int(cy)), 4, (0, 255, 0), -1)
         else:
             if initialized:

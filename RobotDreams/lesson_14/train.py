@@ -9,11 +9,12 @@ better and more visual training monitoring.
 @author: janko
 """
 
-import tensorflow as tf
 from datetime import datetime
-from tensorflow.keras.layers import Conv2D, Dense, Flatten, Input, MaxPooling2D
+
+import tensorflow as tf
 from tensorflow.keras import Model
 from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.layers import Conv2D, Dense, Flatten, Input, MaxPooling2D
 
 # Create directory to store the TensorBoard logs
 logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -27,16 +28,16 @@ num_classes = 10
 size = x_train.shape[1]
 
 # Normalization
-x_train = x_train/255
-x_test = x_test/255
+x_train = x_train / 255
+x_test = x_test / 255
 
 # One-hot encoding
 y_train = tf.keras.utils.to_categorical(y_train, num_classes)
 y_test = tf.keras.utils.to_categorical(y_test, num_classes)
 
-print('Train set:   ', len(y_train), 'samples')
-print('Test set:    ', len(y_test), 'samples')
-print('Sample dims: ', x_train.shape)
+print("Train set:   ", len(y_train), "samples")
+print("Test set:    ", len(y_test), "samples")
+print("Sample dims: ", x_train.shape)
 
 # Build model
 inputs = Input(shape=(size, size, 1))
@@ -55,8 +56,14 @@ batch_size = 128
 
 # Register TensorBoard callbacks and train
 model.compile(loss="categorical_crossentropy", optimizer="adam", metrics=["accuracy"])
-history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1,
-                    callbacks=[tensorboard_callback])
+history = model.fit(
+    x_train,
+    y_train,
+    batch_size=batch_size,
+    epochs=epochs,
+    validation_split=0.1,
+    callbacks=[tensorboard_callback],
+)
 
 # To open the TensorBoard monitor run
 # $ tensorboard --logdir logs/scalars

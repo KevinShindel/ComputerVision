@@ -1,29 +1,30 @@
+from collections import Counter
 from pathlib import Path
+
 import cv2
 import numpy as np
 import tensorflow as tf
-from collections import Counter
 
 mapping = {
-    0: '1 Cent',
-    1: '2 Cent',
-    2: '5 Cent',
-    3: '10 Cent',
-    4: '20 Cent',
-    5: '50 Cent',
-    6: '1 Euro',
-    7: '2 Euro',
+    0: "1 Cent",
+    1: "2 Cent",
+    2: "5 Cent",
+    3: "10 Cent",
+    4: "20 Cent",
+    5: "50 Cent",
+    6: "1 Euro",
+    7: "2 Euro",
 }
 
 coin_to_cents = {
-    '1 Cent': 1,
-    '2 Cent': 2,
-    '5 Cent': 5,
-    '10 Cent': 10,
-    '20 Cent': 20,
-    '50 Cent': 50,
-    '1 Euro': 100,
-    '2 Euro': 200,
+    "1 Cent": 1,
+    "2 Cent": 2,
+    "5 Cent": 5,
+    "10 Cent": 10,
+    "20 Cent": 20,
+    "50 Cent": 50,
+    "1 Euro": 100,
+    "2 Euro": 200,
 }
 
 
@@ -37,15 +38,16 @@ def detect_coins_hough(image_bgr):
     clahe = cv2.createCLAHE(clipLimit=2, tileGridSize=(8, 8)).apply(gray_gamma)
     gray_blur = cv2.medianBlur(clahe, 5)
 
-    circles = cv2.HoughCircles(gray_blur,
-                               cv2.HOUGH_GRADIENT,
-                               dp=1.2,
-                               minDist=60,
-                               param1=175,
-                               param2=35,
-                               minRadius=20,
-                               maxRadius=120,
-                               )
+    circles = cv2.HoughCircles(
+        gray_blur,
+        cv2.HOUGH_GRADIENT,
+        dp=1.2,
+        minDist=60,
+        param1=175,
+        param2=35,
+        minRadius=20,
+        maxRadius=120,
+    )
 
     if circles is None:
         return []
@@ -104,7 +106,9 @@ def predict_all_coins(image_bgr, model, image_size=(128, 128), scale01=False):
         if crop is None:
             continue
 
-        x_model = preprocess_crop_for_model(crop, image_size=image_size, scale01=scale01)
+        x_model = preprocess_crop_for_model(
+            crop, image_size=image_size, scale01=scale01
+        )
         crops.append(x_model)
         kept_circles.append((x, y, r))
 
@@ -123,14 +127,16 @@ def predict_all_coins(image_bgr, model, image_size=(128, 128), scale01=False):
         pred_name = mapping[pred_idx]
         conf = float(p[pred_idx])
 
-        predictions.append({
-            "x": x,
-            "y": y,
-            "r": r,
-            "class_id": pred_idx,
-            "class_name": pred_name,
-            "confidence": conf,
-        })
+        predictions.append(
+            {
+                "x": x,
+                "y": y,
+                "r": r,
+                "class_id": pred_idx,
+                "class_name": pred_name,
+                "confidence": conf,
+            }
+        )
 
         counts[pred_name] += 1
         total_cents += coin_to_cents[pred_name]
@@ -147,13 +153,27 @@ def draw_predictions(image_bgr, predictions, total_cents):
 
         cv2.circle(out, (x, y), r, (0, 255, 0), 2)
         cv2.circle(out, (x, y), 2, (0, 255, 255), 3)
-        cv2.putText(out, label, (x - 40, y - r - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+        cv2.putText(
+            out,
+            label,
+            (x - 40, y - r - 10),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (0, 255, 0),
+            2,
+        )
 
     euros = total_cents // 100
     cents = total_cents % 100
-    cv2.putText(out, f"Total: {euros} euro {cents} cent",
-                (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (255, 255, 0), 2)
+    cv2.putText(
+        out,
+        f"Total: {euros} euro {cents} cent",
+        (20, 30),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.9,
+        (255, 255, 0),
+        2,
+    )
 
     return out
 
@@ -203,5 +223,5 @@ def main():
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

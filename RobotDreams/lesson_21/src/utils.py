@@ -1,7 +1,8 @@
+import dataclasses
 from collections import Counter
+
 import cv2
 import numpy as np
-import dataclasses
 
 
 @dataclasses.dataclass(frozen=True)
@@ -22,7 +23,7 @@ EURO_CENT_10 = CoinData(0.46, 0.60, "10 cent", 10)
 EURO_CENT_20 = CoinData(0.72, 0.8, "20 cent", 20)
 EURO_CENT_50 = CoinData(0.9, 0.96, "50 cent", 50)
 EURO_1 = CoinData(0.8, 0.9, "1 euro", 100)
-EURO_2 = CoinData(0.95, float('+inf'), "2 euro", 200)
+EURO_2 = CoinData(0.95, float("+inf"), "2 euro", 200)
 
 EURO_COINS = (
     EURO_CENT_1,
@@ -36,14 +37,14 @@ EURO_COINS = (
 )
 
 mapping = {
-    0: '1 cent',
-    1: '2 cent',
-    2: '5 cent',
-    3: '10 cent',
-    4: '20 cent',
-    5: '50 cent',
-    6: '1 euro',
-    7: '2 euro',
+    0: "1 cent",
+    1: "2 cent",
+    2: "5 cent",
+    3: "10 cent",
+    4: "20 cent",
+    5: "50 cent",
+    6: "1 euro",
+    7: "2 euro",
 }
 
 # Coin values in euro cents
@@ -135,7 +136,9 @@ def draw_stats(frame, counts, total_coins, total_cents):
     box_h = line_height * len(lines) + 10
 
     overlay = frame.copy()
-    cv2.rectangle(overlay, (x - 5, y - 25), (x - 5 + box_w, y - 25 + box_h), (0, 0, 0), -1)
+    cv2.rectangle(
+        overlay, (x - 5, y - 25), (x - 5 + box_w, y - 25 + box_h), (0, 0, 0), -1
+    )
     frame = cv2.addWeighted(overlay, 0.45, frame, 0.55, 0)
 
     for i, line in enumerate(lines):
@@ -147,7 +150,7 @@ def draw_stats(frame, counts, total_coins, total_cents):
             0.7,
             (0, 255, 0),
             2,
-            cv2.LINE_AA
+            cv2.LINE_AA,
         )
 
     return frame
@@ -212,7 +215,9 @@ def predict_all_coins(image_path, model, image_size=(128, 128), scale01=False):
         if crop is None:
             continue
 
-        x_model = preprocess_crop_for_model(crop, image_size=image_size, scale01=scale01)
+        x_model = preprocess_crop_for_model(
+            crop, image_size=image_size, scale01=scale01
+        )
         crops.append(x_model)
         kept_circles.append((x, y, r))
 
@@ -231,14 +236,16 @@ def predict_all_coins(image_path, model, image_size=(128, 128), scale01=False):
         pred_name = mapping[pred_idx]
         conf = float(p[pred_idx])
 
-        predictions.append({
-            "x": x,
-            "y": y,
-            "r": r,
-            "class_id": pred_idx,
-            "class_name": pred_name,
-            "confidence": conf,
-        })
+        predictions.append(
+            {
+                "x": x,
+                "y": y,
+                "r": r,
+                "class_id": pred_idx,
+                "class_name": pred_name,
+                "confidence": conf,
+            }
+        )
 
         counts[pred_name] += 1
         total_cents += COIN_VALUES_CENTS[pred_name]
@@ -264,7 +271,7 @@ def draw_predictions(image_bgr, predictions, total_cents):
             cv2.FONT_HERSHEY_SIMPLEX,
             0.6,
             (0, 255, 0),
-            2
+            2,
         )
 
     euros = total_cents // 100
@@ -276,7 +283,7 @@ def draw_predictions(image_bgr, predictions, total_cents):
         cv2.FONT_HERSHEY_SIMPLEX,
         0.9,
         (255, 255, 0),
-        2
+        2,
     )
 
     return out
@@ -296,7 +303,7 @@ def resize_keep_aspect(img, out_size=800):
     # center crop coordinates
     x1 = (w - side) // 2
     y1 = (h - side) // 2
-    cropped = img[y1:y1 + side, x1:x1 + side]
+    cropped = img[y1 : y1 + side, x1 : x1 + side]
 
     # Resize to requested output size
     interp = cv2.INTER_AREA if side > out_size else cv2.INTER_CUBIC
@@ -305,8 +312,8 @@ def resize_keep_aspect(img, out_size=800):
 
 
 def recognize_coin(r: float, max_r: float):
-    max_area = 3.14159 * (max_r ** 2)
-    area = 3.14159 * (r ** 2)
+    max_area = 3.14159 * (max_r**2)
+    area = 3.14159 * (r**2)
     coin_k = area / max_area
 
     for coin in EURO_COINS:
@@ -342,11 +349,13 @@ def smooth_circles(prev_circles, curr_circles, dist_threshold=35.0, alpha=0.85):
         if best_i != -1 and best_d < dist_threshold:
             px, py, pr = prev_circles[best_i]
             used_prev.add(best_i)
-            smoothed.append((
-                alpha * px + (1 - alpha) * cx,
-                alpha * py + (1 - alpha) * cy,
-                alpha * pr + (1 - alpha) * cr,
-            ))
+            smoothed.append(
+                (
+                    alpha * px + (1 - alpha) * cx,
+                    alpha * py + (1 - alpha) * cy,
+                    alpha * pr + (1 - alpha) * cr,
+                )
+            )
         else:
             smoothed.append((cx, cy, cr))
 
@@ -360,11 +369,15 @@ def init_trackbars(controls_win):
     cv2.createTrackbar("param1", controls_win, 80, 300, on_change)
     cv2.createTrackbar("param2", controls_win, 45, 200, on_change)
     cv2.createTrackbar("minRadius", controls_win, 20, 400, on_change)
-    cv2.createTrackbar("maxRadius", controls_win, 90, 400, on_change)  # max bigger than value!
-    cv2.createTrackbar("clipLimit", controls_win, 3, 5, on_change)  # max bigger than value!
+    cv2.createTrackbar(
+        "maxRadius", controls_win, 90, 400, on_change
+    )  # max bigger than value!
+    cv2.createTrackbar(
+        "clipLimit", controls_win, 3, 5, on_change
+    )  # max bigger than value!
 
 
-def detect_coins(img, controls_win='Control'):
+def detect_coins(img, controls_win="Control"):
     dp = cv2.getTrackbarPos("dp_x10", controls_win) / 10.0
     dp = max(dp, 1.0)
 
@@ -384,8 +397,9 @@ def detect_coins(img, controls_win='Control'):
     lut = np.array([((i / 255.0) ** gamma) * 255 for i in range(256)], dtype=np.uint8)
     gray_gamma = cv2.LUT(gray, lut)
 
-    clahe = cv2.createCLAHE(clipLimit=max(1, clipLimit),
-                            tileGridSize=(8, 8)).apply(gray_gamma)  # ClipLimit = 2
+    clahe = cv2.createCLAHE(clipLimit=max(1, clipLimit), tileGridSize=(8, 8)).apply(
+        gray_gamma
+    )  # ClipLimit = 2
     gray_blur = cv2.GaussianBlur(clahe, (9, 9), 2.5)
 
     # HoughCircles Detection
