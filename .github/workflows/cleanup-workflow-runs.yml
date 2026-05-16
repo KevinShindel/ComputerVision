@@ -29,7 +29,7 @@ jobs:
             
             // Fetch all workflow runs (paginated)
             while (hasMore) {
-              const response = await github.rest.actions.listWorkflowRuns({
+              const response = await github.rest.actions.listWorkflowRunsForRepo({
                 owner: owner,
                 repo: repo,
                 per_page: 100,
