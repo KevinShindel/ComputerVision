@@ -21,34 +21,50 @@ jobs:
             const owner = context.repo.owner;
             const repo = context.repo.repo;
             
-            // Get all workflow runs
-            const runs = await github.rest.actions.listWorkflowRuns({
-              owner: owner,
-              repo: repo,
-              per_page: 100
-            });
+            console.log(`Fetching all workflow runs for ${owner}/${repo}...`);
             
-            console.log(`Total workflow runs found: ${runs.data.total_count}`);
+            let page = 1;
+            let allRuns = [];
+            let hasMore = true;
             
-            // Get unique workflow IDs
+            // Fetch all workflow runs (paginated)
+            while (hasMore) {
+              const response = await github.rest.actions.listWorkflowRuns({
+                owner: owner,
+                repo: repo,
+                per_page: 100,
+                page: page
+              });
+              
+              allRuns = allRuns.concat(response.data.workflow_runs);
+              hasMore = response.data.workflow_runs.length === 100;
+              page++;
+            }
+            
+            console.log(`Total workflow runs found: ${allRuns.length}`);
+            
+            // Group runs by workflow name
             const workflowMap = {};
-            runs.data.workflow_runs.forEach(run => {
-              const workflowId = run.workflow_id;
-              if (!workflowMap[workflowId]) {
-                workflowMap[workflowId] = [];
+            allRuns.forEach(run => {
+              const workflowName = run.name;
+              if (!workflowMap[workflowName]) {
+                workflowMap[workflowName] = [];
               }
-              workflowMap[workflowId].push(run);
+              workflowMap[workflowName].push(run);
             });
             
             // For each workflow, keep only the last 10 runs, delete the rest
-            for (const workflowId in workflowMap) {
-              const workflowRuns = workflowMap[workflowId].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            let deletedCount = 0;
+            
+            for (const workflowName in workflowMap) {
+              const workflowRuns = workflowMap[workflowName].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
               
-              console.log(`\nWorkflow ID: ${workflowId}`);
-              console.log(`Total runs for this workflow: ${workflowRuns.length}`);
+              console.log(`\n📋 Workflow: "${workflowName}"`);
+              console.log(`   Total runs: ${workflowRuns.length}`);
               
               if (workflowRuns.length > 10) {
                 const runsToDelete = workflowRuns.slice(10);
+                console.log(`   Deleting ${runsToDelete.length} old runs...`);
                 
                 for (const run of runsToDelete) {
                   try {
@@ -57,14 +73,15 @@ jobs:
                       repo: repo,
                       run_id: run.id
                     });
-                    console.log(`✓ Deleted run #${run.id} (created: ${run.created_at})`);
+                    console.log(`   ✓ Deleted run #${run.id} (${run.created_at})`);
+                    deletedCount++;
                   } catch (error) {
-                    console.log(`✗ Failed to delete run #${run.id}: ${error.message}`);
+                    console.log(`   ✗ Failed to delete run #${run.id}: ${error.message}`);
                   }
                 }
               } else {
-                console.log(`Keeping all ${workflowRuns.length} runs (less than or equal to 10)`);
+                console.log(`   ✓ Keeping all ${workflowRuns.length} runs (≤ 10)`);
               }
             }
             
-            console.log('\nCleanup completed!');
+            console.log(`\n✅ Cleanup completed! Deleted ${deletedCount} runs.`);
