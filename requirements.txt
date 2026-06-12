@@ -14,4 +14,4 @@ tensorflow==2.21.0
 tensorflow-datasets==4.9.10
 tensorflow-hub==0.16.1
 tqdm==4.68.1
-ultralytics==8.4.60
+ultralytics==8.4.66
