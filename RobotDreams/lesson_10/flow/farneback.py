@@ -66,7 +66,7 @@ def draw_flow_arrows(
     h, w = bgr.shape[:2]
     vis = bgr.copy()
 
-    y, x = np.mgrid[step // 2 : h : step, step // 2 : w : step].astype(int)
+    y, x = np.mgrid[step // 2:h:step, step // 2:w:step].astype(int)
     fx = flow[y, x, 0]
     fy = flow[y, x, 1]
 
