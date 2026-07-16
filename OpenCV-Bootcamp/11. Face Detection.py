@@ -1,8 +1,6 @@
-import os
-import cv2
 import sys
-from zipfile import ZipFile
-from urllib.request import urlretrieve
+
+import cv2
 
 
 def main():
@@ -16,7 +14,9 @@ def main():
     win_name = "Camera Preview"
     cv2.namedWindow(win_name, cv2.WINDOW_NORMAL)
 
-    net = cv2.dnn.readNetFromCaffe("deploy.prototxt", "res10_300x300_ssd_iter_140000_fp16.caffemodel")
+    net = cv2.dnn.readNetFromCaffe(
+        "deploy.prototxt", "res10_300x300_ssd_iter_140000_fp16.caffemodel"
+    )
     # Model parameters
     in_width = 300
     in_height = 300
@@ -34,7 +34,9 @@ def main():
         frame_width = frame.shape[1]
 
         # Create a 4D blob from a frame.
-        blob = cv2.dnn.blobFromImage(frame, 1.0, (in_width, in_height), mean, swapRB=False, crop=False)
+        blob = cv2.dnn.blobFromImage(
+            frame, 1.0, (in_width, in_height), mean, swapRB=False, crop=False
+        )
         # Run a model
         net.setInput(blob)
         detections = net.forward()
@@ -47,9 +49,16 @@ def main():
                 x_bottom_right = int(detections[0, 0, i, 5] * frame_width)
                 y_bottom_right = int(detections[0, 0, i, 6] * frame_height)
 
-                cv2.rectangle(frame, (x_top_left, y_top_left), (x_bottom_right, y_bottom_right), (0, 255, 0))
+                cv2.rectangle(
+                    frame,
+                    (x_top_left, y_top_left),
+                    (x_bottom_right, y_bottom_right),
+                    (0, 255, 0),
+                )
                 label = "Confidence: %.4f" % confidence
-                label_size, base_line = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1)
+                label_size, base_line = cv2.getTextSize(
+                    label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 1
+                )
 
                 cv2.rectangle(
                     frame,
@@ -58,7 +67,14 @@ def main():
                     (255, 255, 255),
                     cv2.FILLED,
                 )
-                cv2.putText(frame, label, (x_top_left, y_top_left), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0))
+                cv2.putText(
+                    frame,
+                    label,
+                    (x_top_left, y_top_left),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.5,
+                    (0, 0, 0),
+                )
 
         t, _ = net.getPerfProfile()
         label = "Inference time: %.2f ms" % (t * 1000.0 / cv2.getTickFrequency())
@@ -68,5 +84,6 @@ def main():
     source.release()
     cv2.destroyWindow(win_name)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
