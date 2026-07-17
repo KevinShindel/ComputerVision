@@ -14,6 +14,6 @@ seaborn==0.13.2
 tensorflow==2.21.0
 tensorflow-datasets==4.9.10
 tensorflow-hub==0.16.1
-transformers==5.13.0
+transformers==5.14.1
 tqdm==4.68.4
 ultralytics==8.4.92
