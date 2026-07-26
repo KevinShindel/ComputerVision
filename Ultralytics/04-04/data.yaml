@@ -1,0 +1,17 @@
+path: "G:\\Course code\\04-04\\dataset"
+train: "train"
+val: "val"
+test:
+
+names:
+  0: Garlic
+  1: Red Onion
+  2: Carrot
+  3: Chilly
+  4: Onion
+  5: tomato
+  6: potato
+  7: potato
+  8: Cucumber
+  9: Eggplant
+  10: Big Chilly

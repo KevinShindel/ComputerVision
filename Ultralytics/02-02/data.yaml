@@ -1,0 +1,7 @@
+path: "C:\Users\TymurHilfatullin\Projects\ComputerVision\Ultralytics\02-02\dataset"
+train: "train" # train directory
+val: "val" # validation directory
+test: "test" # test directory (optional)
+
+names:
+  apple
