@@ -1,9 +1,9 @@
 datasets==5.0.0
 ipywidgets==8.1.8
 kagglehub==1.0.2
-matplotlib==3.11.0
+matplotlib==3.11.1
 numpy==2.5.1
-opencv-python==5.0.0.93
+opencv-python-headless==4.13.0.92
 optuna==4.9.0
 pandas==3.0.3
 pillow==12.3.0
@@ -17,3 +17,6 @@ tensorflow-hub==0.16.1
 transformers==5.14.1
 tqdm==4.69.0
 ultralytics==8.4.104
+split-folders==0.6.1
+label-studio==1.16.0  # latest package may work but no guarantees.
+streamlit==1.60.0  # latest package may work but no guarantees.

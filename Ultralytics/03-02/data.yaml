@@ -1,0 +1,7 @@
+path: "./dataset"
+train: "train"
+val: "val"
+test: "test"
+
+names:
+  0: apple
