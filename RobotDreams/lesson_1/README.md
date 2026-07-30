@@ -4,7 +4,7 @@ This folder contains the first lesson materials for an introduction to digital i
 
 ## Contents
 
-- `homework/homework.md`  
+- `homework/task/homework.md`  
   Homework instructions to set up the development environment (Anaconda/virtual environment) and install the core packages used in the course: `opencv`, `numpy`, and `matplotlib` (plus Jupyter Notebook).
 
 - `Homework.ipynb`  

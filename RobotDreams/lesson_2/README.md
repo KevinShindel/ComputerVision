@@ -2,6 +2,19 @@
 
 This folder contains Lesson 2 materials focused on tone/intensity transformations and histogram-based image processing.
 
+| Method                                 | Short description                           | Implementation (Python/OpenCV)                                                                                                      |
+|----------------------------------------|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| Fixed global gamma                     | One (\gamma) for whole image.               | out = np.clip((img/255.0)gamma * 255, 0, 255).astype(np.uint8)                                                                      | 
+| Manual gamma tuning                    | User picks best (\gamma).                   | for g in [0.6,0.8,1.0,1.2,1.4]: show((img/255.0)g)                                                                                  |
+| Auto gamma from mean luminance         | Compute (\gamma) from image brightness.     | m = gray.mean()/255.0; gamma = np.log(target)/np.log(max(m,1e-6)); out=((img/255.0)gamma255).astype(np.uint8)                       |
+| LUT-based gamma                        | Faster global gamma via lookup table.       | lut = np.array([((i/255.0)gamma)255 for i in range(256)], np.uint8); out = cv2.LUT(img, lut)                                        |
+| Per-channel gamma (RGB/BGR)            | Different (\gamma) per channel.             | b,g,r = cv2.split(img); out = cv2.merge([f(b,gb), f(g,gg), f(r,gr)])                                                                |
+| Luminance-only gamma                   | Apply gamma only to brightness channel.     | lab=cv2.cvtColor(img,cv2.COLOR_BGR2LAB); L,a,b=cv2.split(lab); L=f(L,gamma); out=cv2.cvtColor(cv2.merge([L,a,b]),cv2.COLOR_LAB2BGR) |
+| Piecewise gamma                        | Different gamma for dark/mid/bright ranges. | mask1=img<85; mask2=(img>=85)&(img<170); ...; out[mask1]=f(img[mask1],g1)                                                           |
+| Spatially adaptive gamma               | Gamma depends on local illumination.        | illum=cv2.GaussianBlur(gray,(0,0),15); gamma_map=1.8-illum/255.0; out=((img/255.0)gamma_map[...,None]255).astype(np.uint8)          |
+| Weighted / brightness-preserving gamma | Brighten shadows, protect highlights.       | w = 1 - gray/255.0; gamma_map = 1 + alpha(w-0.5); out=((img/255.0)gamma_map[...,None]255).astype(np.uint8)                          |
+| Multi-scale gamma fusion               | Blend outputs from several gammas.          | i1=f(img,0.7); i2=f(img,1.0); i3=f(img,1.4); out=cv2.addWeighted(i1,0.4,i2,0.4,0); out=cv2.addWeighted(out,1.0,i3,0.2,0)            |
+
 ## Contents
 
 - `Homework.md`  
