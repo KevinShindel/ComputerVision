@@ -15,7 +15,7 @@ tensorflow==2.21.0
 tensorflow-datasets==4.9.10
 tensorflow-hub==0.16.1
 transformers==5.14.1
-tqdm==4.69.0
+tqdm==4.70.0
 ultralytics==8.4.104
 split-folders==0.6.1
 label-studio==1.23.0  # latest package may work but no guarantees.
