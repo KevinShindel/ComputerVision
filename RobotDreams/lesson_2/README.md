@@ -2,6 +2,10 @@
 
 This folder contains Lesson 2 materials focused on tone/intensity transformations and histogram-based image processing.
 
+<br/>
+
+## Gamma Correction Overview
+
 | Method                                 | Short description                           | Implementation (Python/OpenCV)                                                                                                      |
 |----------------------------------------|---------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
 | Fixed global gamma                     | One (\gamma) for whole image.               | out = np.clip((img/255.0)gamma * 255, 0, 255).astype(np.uint8)                                                                      | 
@@ -26,19 +30,40 @@ This folder contains Lesson 2 materials focused on tone/intensity transformation
 - `Histogram.ipynb`  
   Notebook on image histograms: computing and visualizing intensity/channel histograms, interpreting exposure/contrast issues, and using histogram-based adjustments (e.g., stretching/equalization) to improve image appearance.
 
+<br/>
+
+
 ## Requirements
 
 - Python
 - Packages: `opencv-python`, `numpy`, `matplotlib`
 
+<br/>
+
+
 
 ## White Balance Algorithms Overview
 
-| Algorithm    | When to Use                                                                                  | How to Choose / Detect Suitability                                                                                           | When It’s Not a Good Idea                                                                                  |
-|--------------|----------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------|
-| Gray World   | General color correction when lighting is unknown and no strong color dominance is expected. | Scene contains a mix of colors that should average to neutral gray overall (many different hues, no single color dominates). | Scenes dominated by a single color (e.g., ocean, forest, stage lighting) where the average is not neutral. |
-| White Patch  | Color correction when a true white or very bright neutral surface is present.                | There is at least one reliable white/neutral highlight that should map to pure white.                                        | No true white pixels, or highlights are colored (specular, neon, colored lights).                          |
-| Scale-By-Max | Color normalization to stretch channel intensities for improved contrast balance.            | Channels are clipped differently and you want each channel to reach full range.                                              | Images with noise in dark regions or with saturated highlights; can exaggerate noise and color casts.      |
+| Алгоритм                  | Основна ідея                                   | Швидкість  | Стійкість до шуму                           | Типові випадки використання                                               |
+|---------------------------|------------------------------------------------|------------|---------------------------------------------|---------------------------------------------------------------------------|
+| **Scale-by-Max**          | Нормалізувати кожен канал за його максимумом   | ⭐⭐⭐⭐⭐ | ⭐                                          | Просте нормалізування, попередня обробка                                  |
+| **Gray World**            | Середній колір сцени має бути нейтрально-сірим | ⭐⭐⭐⭐⭐ | ⭐⭐⭐⭐                                    | Загальні природні сцени, класичний color constancy                        |
+| **White Patch (Max-RGB)** | Найяскравіший об'єкт повинен бути білим        | ⭐⭐⭐⭐⭐ | ⭐⭐ (⭐⭐⭐⭐ при використанні перцентиля) | Сцени з білими еталонними об'єктами або яскравими відбиваючими поверхнями |
+
+
+## Advanced White Balance Algorithms Overview
+
+| Алгоритм           | Принцип                                                           | Швидкість  | Якість компенсації освітлення | Збереження кольорів | Типові застосування                                                                   |
+|--------------------|-------------------------------------------------------------------|------------|-------------------------------|---------------------|---------------------------------------------------------------------------------------|
+| **Shades of Gray** | Узагальнення Gray World через Minkowski p-норму                   | ⭐⭐⭐⭐   | ⭐⭐⭐⭐                      | ⭐⭐⭐⭐            | Загальні задачі Computer Vision                                                       |
+| **Gray Edge**      | Використовує статистику градієнтів замість кольорів               | ⭐⭐⭐     | ⭐⭐⭐⭐⭐                    | ⭐⭐⭐⭐            | Робототехніка, автономне керування, сцени з домінуючим кольором                       |
+| **SSR**            | Логарифмічне відношення між зображенням і його Gaussian-розмиттям | ⭐⭐⭐⭐   | ⭐⭐⭐                        | ⭐⭐                | Покращення локального контрасту                                                       |
+| **MSR**            | Усереднення кількох SSR із різними масштабами                     | ⭐⭐⭐     | ⭐⭐⭐⭐⭐                    | ⭐⭐⭐              | Нерівномірне освітлення, тіні                                                         |
+| **MSRCR**          | MSR + функція відновлення кольору (Color Restoration)             | ⭐⭐       | ⭐⭐⭐⭐⭐                    | ⭐⭐⭐⭐⭐          | Професійна обробка зображень, медичні та супутникові дані, системи комп'ютерного зору |
+
+
+<br/>
+
 
 ## Histogram and Equalization Overview
 
@@ -108,7 +133,10 @@ plt.subplot(121), plt.imshow(img, 'gray'), plt.title('Original Image'), plt.axis
 plt.subplot(122), plt.imshow(cl1, 'gray'), plt.title('CLAHE Image'), plt.axis('off')
 ```
 
-## Usefull Links
+<br/>
+
+
+## Usefully Links
 
 > - [OpenCV tutorial for HE](https://docs.opencv.org/3.4/d4/d1b/tutorial_histogram_equalization.html)
 > - [Detailed explanation of gamma correction](https://www.cambridgeincolour.com/tutorials/gamma-correction.htm)
