@@ -14,14 +14,16 @@ This folder contains both the lesson materials and practice tasks:
 - Unsharp Masking - Good for image sharpening ( enhancing details )
 - Guided Filter - Good for edge-preserving smoothing ( detail enhancement )
 
+<br/>
 
+# Usefully links
 
-# Usefull links
 > - [Intuitive Guide to Convolution](https://betterexplained.com/articles/intuitive-convolution/)
 > - [OpenCV with Python Blueprints](https://subscription.packtpub.com/book/application-development/9781785282690/1)
 > - [Bilateral Filtering for Gray and Color Images](https://users.soe.ucsc.edu/~manduchi/Papers/ICCV98.pdf)
 > - [Guided Filter](https://en.wikipedia.org/wiki/Guided_filter)
 
+<br/>
 
 ## Homework Feedback
 - BTW float32 would work too ;-)

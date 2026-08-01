@@ -31,7 +31,7 @@ while True:
                 color,
                 2,
             )
-            imgRoi = img[y : y + h, x : x + w]
+            imgRoi = img[y: y + h, x: x + w]
             cv2.imshow("ROI", imgRoi)
 
     cv2.imshow("Result", img)

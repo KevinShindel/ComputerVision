@@ -60,7 +60,7 @@ def get_warp(img, biggest):
     img_output = cv2.warpPerspective(img, matrix, (widthImg, heightImg))
 
     img_cropped = img_output[
-        20 : img_output.shape[0] - 20, 20 : img_output.shape[1] - 20
+        20: img_output.shape[0] - 20, 20: img_output.shape[1] - 20
     ]
     img_cropped = cv2.resize(img_cropped, (widthImg, heightImg))
 

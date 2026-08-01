@@ -303,7 +303,7 @@ def resize_keep_aspect(img, out_size=800):
     # center crop coordinates
     x1 = (w - side) // 2
     y1 = (h - side) // 2
-    cropped = img[y1 : y1 + side, x1 : x1 + side]
+    cropped = img[y1: y1 + side, x1: x1 + side]
 
     # Resize to requested output size
     interp = cv2.INTER_AREA if side > out_size else cv2.INTER_CUBIC
