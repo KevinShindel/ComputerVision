@@ -22,6 +22,30 @@ This folder contains both the lesson materials and practice tasks:
 
 <hr/>
 
+## Backbone Implementation
+
+```python
+import numpy as np
+
+img = ... # Load your image here
+
+kernel = np.array([[1, 1, 1],
+                   [1, 1, 1],
+                   [1, 1, 1]])/9
+
+rows, cols, channels = img.shape # Get image dimensions
+unsharp = np.zeros_like(img) # Initialize output image
+
+# Sliding window applied to each colour channel
+for r in range(1, rows - 1):
+    for c in range(1, cols - 1):
+        for ch in range(0, channels):
+            block = img[r-1:r+2, c-1:c+2, ch] # create image window 3x3 size array for 1 channel
+            unsharp[r, c, ch] = np.sum(block * kernel) # apply convolution
+```
+
+
+
 ## Usefully links
 
 1. [Intuitive Guide to Convolution](https://betterexplained.com/articles/intuitive-convolution/)
