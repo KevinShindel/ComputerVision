@@ -191,7 +191,7 @@ def main():
 
     for split in ("train", "val", "test"):
         images_dir = data_root / "images" / split
-        labels_dir = data_root / "labels" / split
+        labels_dir = data_root / "segments" / split
 
         if not images_dir.exists():
             continue

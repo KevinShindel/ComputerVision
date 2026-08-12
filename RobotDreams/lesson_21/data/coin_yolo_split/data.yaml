@@ -1,4 +1,4 @@
-path: /kaggle/input/datasets/sh1nd3l/yolo-coin-dataset/coin_yolo_split
+path: /kaggle/input/data_source/sh1nd3l/yolo-coin-dataset/coin_yolo_split
 train: images/train
 val: images/val
 test: images/test

@@ -15,7 +15,7 @@ def monitor_resolution():
 
 def main():
     course_work_dir = Path(__file__).resolve().parents[1]  # .../course_work
-    weights = course_work_dir / "models" / "yolo" / "weights" / "yolo26s_best.pt"
+    weights = course_work_dir / "models" / "yolo" / "weights" / "yolo26s.pt"
     test_img = course_work_dir / "data" / "test" / "euro_coins_example_2.jpg"
 
     # Define Parser

@@ -3,7 +3,7 @@ import cv2
 
 def main():
     image = "../../data/coin_dataset/images/025.jpg"
-    label = "../../data/coin_dataset/labels/025.txt"
+    label = "../../data/coin_dataset/segments/025.txt"
 
     img = cv2.imread(image, cv2.IMREAD_COLOR)
 

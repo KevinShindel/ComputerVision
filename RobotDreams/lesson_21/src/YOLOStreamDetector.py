@@ -7,8 +7,7 @@ from ultralytics import YOLO
 
 
 def main():
-    # weights = "../models/yolo/weights/yolo26s_tuned_best.pt"
-    weights = "../models/yolo/weights/yolo26s_best.pt"
+    weights = "../models/yolo/weights/yolo26s.pt"
 
     model = YOLO(str(weights))
 
@@ -30,11 +29,21 @@ def main():
 
     print("Webcam started. Press 'q' or ESC to exit.")
 
+    curr_num_frame = 0
+
     while True:
         ret, frame = cap.read()
         if not ret:
             print("Failed to read frame from webcam.")
             break
+
+        curr_num_frame += 1
+
+        if curr_num_frame % 10 == 0:
+            # TODO: Implement skip frames
+            # TODO: use detector + classification here
+            pass
+
 
         conf = cv2.getTrackbarPos("conf", controls_win) / 10
 
