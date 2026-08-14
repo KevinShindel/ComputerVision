@@ -21,4 +21,4 @@ tqdm==4.70.0
 ultralytics==8.4.117
 split-folders==0.6.1
 label-studio==1.23.0  # latest package may work but no guarantees.
-streamlit==1.60.0  # latest package may work but no guarantees.
+streamlit==1.61.1  # latest package may work but no guarantees.
