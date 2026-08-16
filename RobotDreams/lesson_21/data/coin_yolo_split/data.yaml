@@ -1,4 +1,4 @@
-path: /kaggle/input/data_source/sh1nd3l/yolo-coin-dataset/coin_yolo_split
+path: C:\Users\Tymur\Projects\ComputerVision\RobotDreams\lesson_21\data\coin_yolo_split
 train: images/train
 val: images/val
 test: images/test

@@ -3,6 +3,9 @@
 This project focuses on creating and managing annotations for computer vision tasks.
 
 ## Option 1. Using ultralytics Annotator
+
+[Official Link](https://docs.ultralytics.com/) <br/>
+
 - See notebook `Ultralytics.ipynb` for more details
 
 `from ultralytics.data.annotator import auto_annotate` <br/> - Automatically annotate images in a dataset
@@ -18,9 +21,13 @@ Pros:
 - Fast and efficient for large datasets
 
 ## Option 2. Using CVAT (Computer Vision Annotation Tool)
-TODO: Investigate this tool
+
+[Official Link](https://docs.cvat.ai/docs/) <br/>
 
 ## Option 3. Using LabelStudio + ML-Backend
+
+[Official Link](https://labelstud.io/) <br/>
+
 - See notebook `LabelStudio.ipynb` for more details
 
 Cons:
@@ -36,7 +43,9 @@ Pros:
 - Easy to manage and organize annotations, especially for large datasets
 
 ## Option 4. Using FiftyOne
-TODO: Investigate this tool
+
+[Official Link](https://voxel51.com/docs/fiftyone/user_guide/annotations.html) <br/>
 
 ## Option 5. Using Supervisely
-TODO: Investigate this tool
+
+[Official Link](https://docs.supervisely.com/) <br/>
