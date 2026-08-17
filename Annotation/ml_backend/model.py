@@ -12,11 +12,10 @@ import logging
 import os
 
 import numpy as np
+from bbox_refinement import refine_bboxes_batch
 from label_studio_ml.model import LabelStudioMLBase
 from PIL import Image
 from ultralytics import SAM, YOLO
-
-from bbox_refinement import refine_bboxes_batch
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +61,9 @@ class YoloSamBackend(LabelStudioMLBase):
 
         logger.info(
             "YoloSamBackend ready | strategy=%s | conf=%.2f | iou=%.2f",
-            self.refinement_strategy, self.conf_threshold, self.iou_threshold,
+            self.refinement_strategy,
+            self.conf_threshold,
+            self.iou_threshold,
         )
 
     # ------------------------------------------------------------------
@@ -74,7 +75,9 @@ class YoloSamBackend(LabelStudioMLBase):
         for task in tasks:
             image_url = task["data"].get(self.image_value)
             if not image_url:
-                logger.warning("No image at key '%s' in task %s", self.image_value, task.get("id"))
+                logger.warning(
+                    "No image at key '%s' in task %s", self.image_value, task.get("id")
+                )
                 predictions.append({"result": [], "score": 0.0})
                 continue
 
@@ -82,11 +85,20 @@ class YoloSamBackend(LabelStudioMLBase):
                 local_path = self.get_local_path(image_url)
                 image = self._load_image(local_path)
                 results = self._predict_single(image)
-                avg_score = float(np.mean([r["score"] for r in results])) if results else 0.0
-                logger.info("Task %s → %d predictions (avg score %.3f)", task.get("id"), len(results), avg_score)
+                avg_score = (
+                    float(np.mean([r["score"] for r in results])) if results else 0.0
+                )
+                logger.info(
+                    "Task %s → %d predictions (avg score %.3f)",
+                    task.get("id"),
+                    len(results),
+                    avg_score,
+                )
                 predictions.append({"result": results, "score": avg_score})
             except Exception:
-                logger.error("Prediction failed for task %s", task.get("id"), exc_info=True)
+                logger.error(
+                    "Prediction failed for task %s", task.get("id"), exc_info=True
+                )
                 predictions.append({"result": [], "score": 0.0})
 
         return predictions
@@ -104,12 +116,14 @@ class YoloSamBackend(LabelStudioMLBase):
         h, w = image.shape[:2]
 
         # Step 1 — YOLO detection
-        yolo_out = self.yolo(image, conf=self.conf_threshold, iou=self.iou_threshold, verbose=False)[0]
+        yolo_out = self.yolo(
+            image, conf=self.conf_threshold, iou=self.iou_threshold, verbose=False
+        )[0]
         if not yolo_out.boxes or len(yolo_out.boxes) == 0:
             return []
 
-        bboxes = yolo_out.boxes.xyxy.cpu().numpy()       # [N, 4] absolute pixels
-        confs = yolo_out.boxes.conf.cpu().numpy()         # [N]
+        bboxes = yolo_out.boxes.xyxy.cpu().numpy()  # [N, 4] absolute pixels
+        confs = yolo_out.boxes.conf.cpu().numpy()  # [N]
         cls_ids = yolo_out.boxes.cls.cpu().numpy().astype(int)
         class_names = yolo_out.names
         logger.info("YOLO: %d objects in %dx%d image", len(bboxes), w, h)
@@ -119,14 +133,14 @@ class YoloSamBackend(LabelStudioMLBase):
         try:
             sam_out = self.sam(image, bboxes=bboxes, verbose=False)[0]
             if sam_out.masks is not None:
-                masks = sam_out.masks.data.cpu().numpy()   # [N, H, W]
+                masks = sam_out.masks.data.cpu().numpy()  # [N, H, W]
                 logger.info("SAM2: %d masks produced", len(masks))
         except Exception:
             logger.warning("SAM2 failed, using raw YOLO bboxes", exc_info=True)
 
         # Step 3 — Refine bboxes with SAM2 masks
         if masks is not None and len(masks) > 0:
-            use_centroid = (self.refinement_strategy == "centroid")
+            use_centroid = self.refinement_strategy == "centroid"
             bboxes = refine_bboxes_batch(bboxes, masks, use_centroid=use_centroid)
             # Clip to image bounds
             bboxes[:, [0, 2]] = np.clip(bboxes[:, [0, 2]], 0, w)
@@ -138,24 +152,26 @@ class YoloSamBackend(LabelStudioMLBase):
         results = []
         for i, (bbox, conf, cls_id) in enumerate(zip(bboxes, confs, cls_ids)):
             x1, y1, x2, y2 = bbox
-            results.append({
-                "id": f"box_{i}",
-                "from_name": self.bbox_from_name,
-                "to_name": self.image_to_name,
-                "type": "rectanglelabels",
-                "score": float(conf),
-                "original_width": int(w),
-                "original_height": int(h),
-                "image_rotation": 0,
-                "value": {
-                    "x": float(x1) / w * 100.0,
-                    "y": float(y1) / h * 100.0,
-                    "width": float(x2 - x1) / w * 100.0,
-                    "height": float(y2 - y1) / h * 100.0,
-                    "rotation": 0,
-                    "rectanglelabels": [class_names[cls_id]],
-                },
-            })
+            results.append(
+                {
+                    "id": f"box_{i}",
+                    "from_name": self.bbox_from_name,
+                    "to_name": self.image_to_name,
+                    "type": "rectanglelabels",
+                    "score": float(conf),
+                    "original_width": int(w),
+                    "original_height": int(h),
+                    "image_rotation": 0,
+                    "value": {
+                        "x": float(x1) / w * 100.0,
+                        "y": float(y1) / h * 100.0,
+                        "width": float(x2 - x1) / w * 100.0,
+                        "height": float(y2 - y1) / h * 100.0,
+                        "rotation": 0,
+                        "rectanglelabels": [class_names[cls_id]],
+                    },
+                }
+            )
 
         return results
 

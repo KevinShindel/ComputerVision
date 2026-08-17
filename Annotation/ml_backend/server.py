@@ -7,7 +7,6 @@ import os
 from pathlib import Path
 
 from label_studio_ml.api import init_app
-
 from model import YoloSamBackend
 
 logging.basicConfig(
@@ -19,6 +18,7 @@ logging.basicConfig(
 _env_file = Path(__file__).with_name(".env")
 try:
     from dotenv import load_dotenv
+
     load_dotenv(_env_file)
 except ImportError:
     # Minimal fallback — parse .env without python-dotenv

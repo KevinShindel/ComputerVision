@@ -1,5 +1,5 @@
 import os
-from typing import Sequence
+from collections.abc import Sequence
 from urllib.request import urlretrieve
 
 import cv2
@@ -146,5 +146,5 @@ def select_roi(frame) -> Sequence[float]:
 
 if __name__ == "__main__":
     for batch in (models, images, videos):
-        print(f"fetching data... {str(batch[0][1])}...")
+        print(f"fetching data... {batch[0][1]!s}...")
         fetch_data(batch)
