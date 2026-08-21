@@ -21,4 +21,4 @@ tqdm>=4.70.0
 ultralytics>=8.4.116
 split-folders>=0.6.1
 label-studio>=1.23.0
-streamlit>=1.60.0
+streamlit>=1.61.1
