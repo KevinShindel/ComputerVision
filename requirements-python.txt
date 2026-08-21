@@ -18,7 +18,7 @@ torchvision==0.26.0+cu128
 torchaudio==2.11.0+cu128
 trackers>=2.6.0
 tqdm>=4.70.0
-ultralytics>=8.4.116
+ultralytics>=8.4.121
 split-folders>=0.6.1
 label-studio>=1.23.0
 streamlit>=1.60.0
