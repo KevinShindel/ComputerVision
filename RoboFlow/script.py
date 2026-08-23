@@ -1,9 +1,8 @@
 import cv2
-from ultralytics import YOLO
-
 import supervision as sv
 from supervision.assets import VideoAssets, download_assets
 from trackers import ByteTrackTracker
+from ultralytics import YOLO
 
 
 def download_video() -> str:

@@ -44,7 +44,6 @@ def main():
             # TODO: use detector + classification here
             pass
 
-
         conf = cv2.getTrackbarPos("conf", controls_win) / 10
 
         results = model.predict(
