@@ -1,0 +1,41 @@
+{
+  "categories": [
+    {
+      "id": 0,
+      "name": "1 cent"
+    },
+    {
+      "id": 1,
+      "name": "1 euro"
+    },
+    {
+      "id": 2,
+      "name": "10 cent"
+    },
+    {
+      "id": 3,
+      "name": "2 cent"
+    },
+    {
+      "id": 4,
+      "name": "2 euro"
+    },
+    {
+      "id": 5,
+      "name": "20 cent"
+    },
+    {
+      "id": 6,
+      "name": "5 cent"
+    },
+    {
+      "id": 7,
+      "name": "50 cent"
+    }
+  ],
+  "info": {
+    "year": 2026,
+    "version": "1.0",
+    "contributor": "Label Studio"
+  }
+}
