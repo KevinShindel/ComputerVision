@@ -4,12 +4,9 @@ import json
 import logging
 import os
 import shutil
-import tempfile
 from datetime import datetime
 from pathlib import Path
-from typing import Optional
 
-from PIL import Image
 from ultralytics import YOLO
 
 from .data_converter import AnnotationToYoloConverter
@@ -23,7 +20,7 @@ class ActiveLearningTrainer:
     def __init__(
         self,
         base_model_path: str,
-        training_dir: Optional[str] = None,
+        training_dir: str | None = None,
         epochs: int = 3,
         batch_size: int = 4,
         imgsz: int = 640,
@@ -67,7 +64,7 @@ class ActiveLearningTrainer:
             f"epochs={epochs} | device={device}"
         )
 
-    def _download_image(self, image_url: str) -> Optional[Path]:
+    def _download_image(self, image_url: str) -> Path | None:
         """Download image from Label Studio URL."""
         try:
             # If it's a local path, just return it
@@ -91,7 +88,7 @@ class ActiveLearningTrainer:
             logger.error(f"Failed to download image {image_url}: {e}")
             return None
 
-    def add_training_sample(self, task: dict, image_url: Optional[str] = None) -> bool:
+    def add_training_sample(self, task: dict, image_url: str | None = None) -> bool:
         """
         Add a single task's annotations to training dataset.
 
@@ -138,7 +135,9 @@ class ActiveLearningTrainer:
             txt_path = self.labels_dir / f"task_{task_id}_{image_path.stem}.txt"
             with open(txt_path, "w") as f:
                 f.write("\n".join(yolo_annotations))
-            logger.info(f"Added training sample: {new_image_path.name} with {len(yolo_annotations)} objects")
+            logger.info(
+                f"Added training sample: {new_image_path.name} with {len(yolo_annotations)} objects"
+            )
             return True
         except Exception as e:
             logger.error(f"Failed to save annotations: {e}")
@@ -168,7 +167,7 @@ names: {sorted_classes}
         logger.info(f"Created data.yaml with {len(sorted_classes)} classes")
         return data_yaml_path
 
-    def train(self) -> Optional[Path]:
+    def train(self) -> Path | None:
         """
         Fine-tune YOLO model on accumulated training data.
 
@@ -176,7 +175,9 @@ names: {sorted_classes}
             Path to trained model or None if training failed
         """
         # Check if we have training data
-        if not list(self.images_dir.glob("*.jpg")) and not list(self.images_dir.glob("*.png")):
+        if not list(self.images_dir.glob("*.jpg")) and not list(
+            self.images_dir.glob("*.png")
+        ):
             logger.warning("No training images available")
             return None
 
@@ -209,7 +210,9 @@ names: {sorted_classes}
 
             # Save checkpoint with timestamp
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            checkpoint_path = self.checkpoint_dir / f"yolo_al_ep{self.epochs}_{timestamp}.pt"
+            checkpoint_path = (
+                self.checkpoint_dir / f"yolo_al_ep{self.epochs}_{timestamp}.pt"
+            )
             model.save(str(checkpoint_path))
 
             self.current_model = checkpoint_path
@@ -236,7 +239,7 @@ names: {sorted_classes}
             logger.error(f"Training failed: {e}", exc_info=True)
             return None
 
-    def get_latest_checkpoint(self) -> Optional[Path]:
+    def get_latest_checkpoint(self) -> Path | None:
         """Get the most recent trained checkpoint."""
         checkpoints = list(self.checkpoint_dir.glob("yolo_al_*.pt"))
         if not checkpoints:
@@ -261,5 +264,9 @@ names: {sorted_classes}
             "num_samples": self.get_num_training_samples(),
             "num_checkpoints": len(list(self.checkpoint_dir.glob("*.pt"))),
             "classes": self.converter.get_class_mapping(),
-            "latest_checkpoint": str(self.get_latest_checkpoint()) if self.get_latest_checkpoint() else None,
+            "latest_checkpoint": (
+                str(self.get_latest_checkpoint())
+                if self.get_latest_checkpoint()
+                else None
+            ),
         }

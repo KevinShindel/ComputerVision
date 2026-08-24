@@ -15,11 +15,9 @@ import logging
 import os
 from threading import Thread
 
-import numpy as np
-from ultralytics import YOLO
-
 from active_learning import ActiveLearningTrainer
 from model import YoloSamBackend
+from ultralytics import YOLO
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +29,11 @@ class ActiveYoloSamBackend(YoloSamBackend):
         super().__init__(**kwargs)
 
         # ── Active Learning setup ───────────────────────────────────────────────
-        self.al_enabled = os.getenv("ACTIVE_LEARNING_ENABLED", "true").lower() in ("true", "1", "yes")
+        self.al_enabled = os.getenv("ACTIVE_LEARNING_ENABLED", "true").lower() in (
+            "true",
+            "1",
+            "yes",
+        )
         self.al_trainer = None
         self.al_training_thread = None
         self.yolo_base_path = _resolve_model_path("YOLO_MODEL", "models/yolo26s.pt")
@@ -52,8 +54,12 @@ class ActiveYoloSamBackend(YoloSamBackend):
                     imgsz=al_imgsz,
                     device=al_device,
                 )
-                logger.info("Active Learning enabled | epochs=%d | batch=%d | device=%s",
-                           al_epochs, al_batch_size, al_device)
+                logger.info(
+                    "Active Learning enabled | epochs=%d | batch=%d | device=%s",
+                    al_epochs,
+                    al_batch_size,
+                    al_device,
+                )
             except Exception as e:
                 logger.error("Failed to initialize Active Learning: %s", e)
                 self.al_enabled = False
@@ -100,7 +106,9 @@ class ActiveYoloSamBackend(YoloSamBackend):
     def _train_async(self, annotations):
         """Async training worker thread."""
         try:
-            logger.info("Starting Active Learning training | annotations=%d", len(annotations))
+            logger.info(
+                "Starting Active Learning training | annotations=%d", len(annotations)
+            )
 
             # Aggregate tasks from annotations
             tasks_dict = {}
