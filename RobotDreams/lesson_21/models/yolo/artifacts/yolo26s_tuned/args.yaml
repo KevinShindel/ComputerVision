@@ -1,7 +1,7 @@
 task: detect
 mode: train
 model: yolo26s.pt
-data: /kaggle/input/datasets/sh1nd3l/yolo-coin-dataset/coin_yolo_split/data.yaml
+data: /kaggle/input/data_source/sh1nd3l/yolo-coin-dataset/coin_yolo_split/data.yaml
 epochs: 150
 time: null
 patience: 15

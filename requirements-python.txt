@@ -1,0 +1,24 @@
+datasets>=5.0.1
+ipywidgets>=8.1.9
+kagglehub>=1.0.2
+matplotlib>=3.11.1
+numpy>=2.5.2
+opencv-python-headless>=5.0.0.93
+optuna>=4.9.0
+pandas>=3.0.5
+pillow>=12.3.0
+pydot>=4.0.1
+scikit-learn>=1.9.0
+scikit-image>=0.26.0
+seaborn>=0.13.2
+supervision>=0.30.0
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.13.0
+torchvision==0.28.0
+torchaudio==2.11.0+cu128
+trackers>=2.6.0
+tqdm>=4.70.0
+ultralytics>=8.4.121
+split-folders>=0.6.1
+label-studio>=1.23.0
+streamlit>=1.61.1
