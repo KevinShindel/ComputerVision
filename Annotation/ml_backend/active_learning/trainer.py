@@ -60,12 +60,48 @@ class ActiveLearningTrainer:
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
         self.current_model = None
+        self._class_mapping_file = self.training_dir / "class_mapping.json"
         self.converter = AnnotationToYoloConverter()
+        self._load_class_mapping()
 
         logger.info(
             f"ActiveLearningTrainer initialized | model={base_model_path} | "
             f"epochs={epochs} | device={device}"
         )
+
+    def _load_class_mapping(self) -> None:
+        """Restore the class mapping saved from a previous session."""
+        if self._class_mapping_file.exists():
+            try:
+                with open(self._class_mapping_file) as f:
+                    self.converter.class_mapping = json.load(f)
+                logger.info("Loaded class mapping: %s", self.converter.class_mapping)
+            except Exception as e:
+                logger.warning("Could not load class mapping: %s", e)
+
+    def _save_class_mapping(self) -> None:
+        """Persist the current class mapping to disk."""
+        try:
+            with open(self._class_mapping_file, "w") as f:
+                json.dump(self.converter.class_mapping, f, indent=2)
+        except Exception as e:
+            logger.warning("Could not save class mapping: %s", e)
+
+    def seed_class_mapping(self, class_names: list) -> None:
+        """Pre-populate the class mapping from a fixed, ordered list of label names.
+
+        Call this once (e.g. from the Label Studio label config) before any
+        training so that class IDs are deterministic across all subprocess runs.
+        Existing entries in the mapping are not overwritten.
+        """
+        changed = False
+        for name in class_names:
+            if name not in self.converter.class_mapping:
+                self.converter.class_mapping[name] = len(self.converter.class_mapping)
+                changed = True
+        if changed:
+            self._save_class_mapping()
+            logger.info("Seeded class mapping: %s", self.converter.class_mapping)
 
     def _download_image(self, image_url: str) -> Optional[Path]:
         """Download image from Label Studio URL."""
@@ -138,6 +174,7 @@ class ActiveLearningTrainer:
             txt_path = self.labels_dir / f"task_{task_id}_{image_path.stem}.txt"
             with open(txt_path, "w") as f:
                 f.write("\n".join(yolo_annotations))
+            self._save_class_mapping()
             logger.info(f"Added training sample: {new_image_path.name} with {len(yolo_annotations)} objects")
             return True
         except Exception as e:

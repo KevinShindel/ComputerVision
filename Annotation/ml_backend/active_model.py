@@ -8,14 +8,12 @@ Pipeline:
   2. SAM2 uses those boxes as prompts → pixel-level masks per object
   3. Masks refine bounding box coordinates (corrects YOLO inaccuracies)
   4. Results are returned as RectangleLabels with refined coordinates
-  5. NEW: On /train endpoint, fine-tunes YOLO on labeled data
+  5. NEW: On annotation events, fine-tunes YOLO on labeled data
 """
 
 import logging
 import os
-from threading import Thread
 
-import numpy as np
 from ultralytics import YOLO
 
 from active_learning import ActiveLearningTrainer
@@ -27,13 +25,16 @@ logger = logging.getLogger(__name__)
 class ActiveYoloSamBackend(YoloSamBackend):
     """YOLO26 + SAM2 backend with Active Learning for incremental model training."""
 
+    # Include START_TRAINING so process_event() calls fit() for it too,
+    # preventing the framework from writing an empty result file.
+    TRAIN_EVENTS = YoloSamBackend.TRAIN_EVENTS + ('START_TRAINING',)
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         # ── Active Learning setup ───────────────────────────────────────────────
         self.al_enabled = os.getenv("ACTIVE_LEARNING_ENABLED", "true").lower() in ("true", "1", "yes")
         self.al_trainer = None
-        self.al_training_thread = None
         self.yolo_base_path = _resolve_model_path("YOLO_MODEL", "models/yolo26s.pt")
 
         if self.al_enabled:
@@ -52,6 +53,9 @@ class ActiveYoloSamBackend(YoloSamBackend):
                     imgsz=al_imgsz,
                     device=al_device,
                 )
+                # Pre-populate class mapping from Label Studio label config so
+                # class IDs are deterministic across all subprocess restarts.
+                self._seed_class_mapping()
                 logger.info("Active Learning enabled | epochs=%d | batch=%d | device=%s",
                            al_epochs, al_batch_size, al_device)
             except Exception as e:
@@ -62,7 +66,6 @@ class ActiveYoloSamBackend(YoloSamBackend):
 
     def predict(self, tasks, **kwargs):
         """Override predict to auto-load latest trained checkpoint."""
-        # Check if there's a new trained checkpoint and reload
         if self.al_enabled and self.al_trainer:
             latest_checkpoint = self.al_trainer.get_latest_checkpoint()
             if latest_checkpoint and str(latest_checkpoint) != self.yolo_base_path:
@@ -76,68 +79,95 @@ class ActiveYoloSamBackend(YoloSamBackend):
         return super().predict(tasks, **kwargs)
 
     def fit(self, annotations, **kwargs):
-        """Process annotations and trigger Active Learning training."""
-        logger.info("Received %d annotations", len(annotations))
+        """Add the new annotation to the training set and fine-tune synchronously.
 
+        The label_studio_ml framework always calls fit((), event=..., data=...) from
+        inside a dedicated subprocess, so there is no need for a background thread —
+        running synchronously here is both correct and safe.
+        """
         if not self.al_enabled or not self.al_trainer:
             logger.info("Active Learning disabled — acknowledgment only")
-            return {"status": "ok", "annotations_received": len(annotations)}
+            return {"status": "ok", "message": "Active Learning disabled"}
 
-        # Process annotations asynchronously
-        self.al_training_thread = Thread(
-            target=self._train_async,
-            args=(annotations,),
-            daemon=True,
-        )
-        self.al_training_thread.start()
+        event = kwargs.get("event", "")
+        data = kwargs.get("data", {})
 
-        return {
-            "status": "training_queued",
-            "annotations_received": len(annotations),
-            "message": "Training started in background",
-        }
+        # START_TRAINING carries only project metadata — retrain on whatever
+        # samples have already been accumulated on disk.
+        if event == "START_TRAINING":
+            logger.info("START_TRAINING received — retraining on accumulated samples")
+            return self._run_training()
 
-    def _train_async(self, annotations):
-        """Async training worker thread."""
+        # For ANNOTATION_* events the payload contains both task and annotation.
+        task = data.get("task")
+        annotation = data.get("annotation")
+
+        if not task or not annotation:
+            logger.warning("Event %s: no task/annotation in payload — skipping", event)
+            return {"status": "ok", "message": "No annotation data in event"}
+
+        # Build the task structure expected by add_training_sample / process_task.
+        task_for_training = dict(task)
+        task_for_training["annotations"] = [annotation]
+        raw_url = task.get("data", {}).get(self.image_value)
+        image_url = self._resolve_image_url(raw_url)
+
+        logger.info("Adding sample | annotation=%s task=%s", annotation.get("id"), task.get("id"))
+        added = self.al_trainer.add_training_sample(task_for_training, image_url)
+        if not added:
+            logger.warning("Sample not added for task %s — skipping training", task.get("id"))
+            return {"status": "ok", "message": "Sample not added"}
+
+        logger.info("Sample added | total on disk=%d", self.al_trainer.get_num_training_samples())
+        return self._run_training()
+
+    def _run_training(self) -> dict:
+        """Run YOLO fine-tuning and return a result dict suitable for the framework."""
         try:
-            logger.info("Starting Active Learning training | annotations=%d", len(annotations))
-
-            # Aggregate tasks from annotations
-            tasks_dict = {}
-            for ann in annotations:
-                task_id = ann.get("task")
-                if task_id not in tasks_dict:
-                    tasks_dict[task_id] = {
-                        "id": task_id,
-                        "data": ann.get("data", {}),
-                        "annotations": [],
-                    }
-                tasks_dict[task_id]["annotations"].append(ann)
-
-            # Add samples to trainer
-            num_added = 0
-            for task_id, task in tasks_dict.items():
-                image_url = task.get("data", {}).get(self.image_value)
-                if self.al_trainer.add_training_sample(task, image_url):
-                    num_added += 1
-
-            if num_added == 0:
-                logger.warning("No valid training samples added")
-                return
-
-            logger.info("Added %d training samples", num_added)
-
-            # Train
             checkpoint = self.al_trainer.train()
-            if checkpoint:
-                logger.info("✓ Training completed | checkpoint=%s", checkpoint)
-                stats = self.al_trainer.get_training_stats()
-                logger.info("Training stats: %s", stats)
-            else:
-                logger.error("Training failed")
-
         except Exception as e:
-            logger.error("Async training failed: %s", e, exc_info=True)
+            logger.error("Training raised an exception: %s", e, exc_info=True)
+            return {"status": "error", "message": str(e)}
+
+        if checkpoint:
+            stats = self.al_trainer.get_training_stats()
+            logger.info("Training completed | checkpoint=%s | stats=%s", checkpoint, stats)
+            return {
+                "status": "ok",
+                "checkpoint": str(checkpoint),
+                "num_samples": stats.get("num_samples", 0),
+            }
+
+        logger.warning("Training produced no checkpoint (not enough data?)")
+        return {"status": "ok", "message": "Training skipped — not enough data"}
+
+    def _seed_class_mapping(self) -> None:
+        """Extract label names from the Label Studio config and seed the trainer."""
+        if not self.al_trainer:
+            return
+        try:
+            # parsed_label_config: {tag_name: {'labels': [...], ...}, ...}
+            for tag_info in self.parsed_label_config.values():
+                labels = tag_info.get("labels", [])
+                if labels:
+                    self.al_trainer.seed_class_mapping(labels)
+                    return
+        except Exception as e:
+            logger.warning("Could not seed class mapping from label config: %s", e)
+
+    def _resolve_image_url(self, url: str) -> str:
+        """Convert a Label Studio-internal URL (e.g. /data/upload/…) to a local path.
+
+        LabelStudioMLBase.get_local_path() handles the hostname + token lookup,
+        local-files mapping, and temporary download as needed.
+        """
+        if not url:
+            return url
+        try:
+            return self.get_local_path(url)
+        except Exception as e:
+            logger.warning("Could not resolve image URL %r: %s — using raw value", url, e)
+            return url
 
 
 def _resolve_model_path(env_var: str, default: str) -> str:
