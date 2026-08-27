@@ -4,8 +4,7 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-from src.utils import (detect_coins, init_trackbars, recognize_coin,
-                       resize_keep_aspect)
+from src.utils import detect_coins, init_trackbars, recognize_coin, resize_keep_aspect
 
 
 def main():

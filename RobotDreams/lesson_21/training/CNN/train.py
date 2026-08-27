@@ -10,7 +10,7 @@ def main():
     H, W = img.shape[:2]
 
     with open(label, "r") as handler:
-        for line in handler.readlines():
+        for line in handler:
             cls, x, y, w, h = map(float, line.split())
 
             # convert
