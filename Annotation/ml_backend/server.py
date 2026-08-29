@@ -34,10 +34,12 @@ except ImportError:
 # ── Select model class based on configuration ────────────────────────────────
 if os.getenv("ACTIVE_LEARNING_ENABLED", "true").lower() in ("true", "1", "yes"):
     from active_model import ActiveYoloSamBackend
+
     model_class = ActiveYoloSamBackend
     logging.info("Using ActiveYoloSamBackend (Active Learning enabled)")
 else:
     from model import YoloSamBackend
+
     model_class = YoloSamBackend
     logging.info("Using YoloSamBackend (standard)")
 
@@ -51,6 +53,8 @@ _model_dir = Path(os.getenv("MODEL_DIR", ".ls-models"))
 if not _model_dir.is_absolute():
     _model_dir = (_base / _model_dir).resolve()
 model_dir = str(_model_dir)
+
+
 def _ensure_initial_job_result(base_model_dir: str) -> None:
     """Create stub job-result files so Label Studio finds a valid model version.
 

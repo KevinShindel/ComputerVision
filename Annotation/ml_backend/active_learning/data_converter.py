@@ -1,12 +1,8 @@
 """Convert Label Studio annotations to YOLO format."""
 
-import json
 import logging
 from pathlib import Path
-from typing import Optional
 
-import cv2
-import numpy as np
 from PIL import Image
 
 logger = logging.getLogger(__name__)
@@ -15,7 +11,9 @@ logger = logging.getLogger(__name__)
 class AnnotationToYoloConverter:
     """Converts Label Studio bbox annotations to YOLO format."""
 
-    def __init__(self, image_width: Optional[int] = None, image_height: Optional[int] = None):
+    def __init__(
+        self, image_width: int | None = None, image_height: int | None = None
+    ):
         """
         Initialize converter.
 
@@ -27,7 +25,9 @@ class AnnotationToYoloConverter:
         self.image_height = image_height
         self.class_mapping = {}  # label_name -> class_id
 
-    def _normalize_bbox(self, x: float, y: float, w: float, h: float, img_w: int, img_h: int) -> tuple:
+    def _normalize_bbox(
+        self, x: float, y: float, w: float, h: float, img_w: int, img_h: int
+    ) -> tuple:
         """Normalize bbox to YOLO format (center_x, center_y, width, height in 0-1 range)."""
         center_x = (x + w / 2) / img_w
         center_y = (y + h / 2) / img_h
@@ -44,10 +44,10 @@ class AnnotationToYoloConverter:
     def process_task(
         self,
         task: dict,
-        image_path: Optional[Path] = None,
+        image_path: Path | None = None,
         bbox_tag_name: str = "bbox_labels",
         image_value_key: str = "image",
-    ) -> Optional[tuple]:
+    ) -> tuple | None:
         """
         Process a single Label Studio task and convert to YOLO format.
 
@@ -69,7 +69,9 @@ class AnnotationToYoloConverter:
 
         if img_w is None or img_h is None:
             if image_path is None:
-                logger.warning(f"Task {task.get('id')}: cannot determine image dimensions")
+                logger.warning(
+                    f"Task {task.get('id')}: cannot determine image dimensions"
+                )
                 return None
             try:
                 img = Image.open(image_path)
@@ -118,14 +120,18 @@ class AnnotationToYoloConverter:
                     x_px, y_px, w_px, h_px, img_w, img_h
                 )
 
-                yolo_annotations.append(f"{class_id} {center_x:.6f} {center_y:.6f} {width_norm:.6f} {height_norm:.6f}")
+                yolo_annotations.append(
+                    f"{class_id} {center_x:.6f} {center_y:.6f} {width_norm:.6f} {height_norm:.6f}"
+                )
 
         if not yolo_annotations:
             return None
 
         return (image_path, yolo_annotations)
 
-    def save_yolo_annotations(self, output_dir: Path, image_path: Path, annotations: list) -> Path:
+    def save_yolo_annotations(
+        self, output_dir: Path, image_path: Path, annotations: list
+    ) -> Path:
         """Save annotations in YOLO format."""
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -151,8 +157,7 @@ class AnnotationToYoloConverter:
 
         classes_path = output_dir / "classes.txt"
         with open(classes_path, "w") as f:
-            for class_id in sorted(reverse_mapping.keys()):
-                f.write(f"{reverse_mapping[class_id]}\n")
+            f.writelines(f"{reverse_mapping[class_id]}\n" for class_id in sorted(reverse_mapping.keys()))
 
         logger.info(f"Saved classes file: {classes_path}")
         return classes_path
