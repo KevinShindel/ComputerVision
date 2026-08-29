@@ -56,8 +56,15 @@ model_dir = str(_model_dir)
 
 
 def _ensure_initial_job_result(base_model_dir: str) -> None:
-    """Create stub job-result files so Label Studio finds a valid model version."""
+    """Create stub job-result files so Label Studio finds a valid model version.
+
+    Also patches any existing job directories that are missing a result file
+    (left behind by previously failed/interrupted training subprocesses) so the
+    framework no longer emits AssertionError warnings when scanning past jobs.
+    """
     root = Path(base_model_dir)
+
+    # Always guarantee an INITIAL stub exists.
     for d in (root / "INITIAL", root / root.name):
         d.mkdir(parents=True, exist_ok=True)
         result = d / "job_result.json"
@@ -66,6 +73,17 @@ def _ensure_initial_job_result(base_model_dir: str) -> None:
                 json.dumps({"status": "initial", "job_id": root.name}),
                 encoding="utf-8",
             )
+
+    # Patch any other job dirs that are missing their result file.
+    if root.exists():
+        for sub in root.iterdir():
+            if sub.is_dir() and sub.name.isdigit():
+                result = sub / "job_result.json"
+                if not result.exists():
+                    result.write_text(
+                        json.dumps({"status": "patched", "job_id": sub.name}),
+                        encoding="utf-8",
+                    )
 
 
 _ensure_initial_job_result(model_dir)
