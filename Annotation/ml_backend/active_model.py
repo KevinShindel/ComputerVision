@@ -14,10 +14,9 @@ Pipeline:
 import logging
 import os
 
-from ultralytics import YOLO
-
 from active_learning import ActiveLearningTrainer
 from model import YoloSamBackend
+from ultralytics import YOLO
 
 logger = logging.getLogger(__name__)
 
@@ -27,13 +26,17 @@ class ActiveYoloSamBackend(YoloSamBackend):
 
     # Include START_TRAINING so process_event() calls fit() for it too,
     # preventing the framework from writing an empty result file.
-    TRAIN_EVENTS = YoloSamBackend.TRAIN_EVENTS + ('START_TRAINING',)
+    TRAIN_EVENTS = YoloSamBackend.TRAIN_EVENTS + ("START_TRAINING",)
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
         # ── Active Learning setup ───────────────────────────────────────────────
-        self.al_enabled = os.getenv("ACTIVE_LEARNING_ENABLED", "true").lower() in ("true", "1", "yes")
+        self.al_enabled = os.getenv("ACTIVE_LEARNING_ENABLED", "true").lower() in (
+            "true",
+            "1",
+            "yes",
+        )
         self.al_trainer = None
         self.yolo_base_path = _resolve_model_path("YOLO_MODEL", "models/yolo26s.pt")
 
@@ -56,8 +59,12 @@ class ActiveYoloSamBackend(YoloSamBackend):
                 # Pre-populate class mapping from Label Studio label config so
                 # class IDs are deterministic across all subprocess restarts.
                 self._seed_class_mapping()
-                logger.info("Active Learning enabled | epochs=%d | batch=%d | device=%s",
-                           al_epochs, al_batch_size, al_device)
+                logger.info(
+                    "Active Learning enabled | epochs=%d | batch=%d | device=%s",
+                    al_epochs,
+                    al_batch_size,
+                    al_device,
+                )
             except Exception as e:
                 logger.error("Failed to initialize Active Learning: %s", e)
                 self.al_enabled = False
@@ -112,13 +119,22 @@ class ActiveYoloSamBackend(YoloSamBackend):
         raw_url = task.get("data", {}).get(self.image_value)
         image_url = self._resolve_image_url(raw_url)
 
-        logger.info("Adding sample | annotation=%s task=%s", annotation.get("id"), task.get("id"))
+        logger.info(
+            "Adding sample | annotation=%s task=%s",
+            annotation.get("id"),
+            task.get("id"),
+        )
         added = self.al_trainer.add_training_sample(task_for_training, image_url)
         if not added:
-            logger.warning("Sample not added for task %s — skipping training", task.get("id"))
+            logger.warning(
+                "Sample not added for task %s — skipping training", task.get("id")
+            )
             return {"status": "ok", "message": "Sample not added"}
 
-        logger.info("Sample added | total on disk=%d", self.al_trainer.get_num_training_samples())
+        logger.info(
+            "Sample added | total on disk=%d",
+            self.al_trainer.get_num_training_samples(),
+        )
         return self._run_training()
 
     def _run_training(self) -> dict:
@@ -131,7 +147,9 @@ class ActiveYoloSamBackend(YoloSamBackend):
 
         if checkpoint:
             stats = self.al_trainer.get_training_stats()
-            logger.info("Training completed | checkpoint=%s | stats=%s", checkpoint, stats)
+            logger.info(
+                "Training completed | checkpoint=%s | stats=%s", checkpoint, stats
+            )
             return {
                 "status": "ok",
                 "checkpoint": str(checkpoint),
@@ -166,7 +184,9 @@ class ActiveYoloSamBackend(YoloSamBackend):
         try:
             return self.get_local_path(url)
         except Exception as e:
-            logger.warning("Could not resolve image URL %r: %s — using raw value", url, e)
+            logger.warning(
+                "Could not resolve image URL %r: %s — using raw value", url, e
+            )
             return url
 
 
