@@ -11,9 +11,7 @@ logger = logging.getLogger(__name__)
 class AnnotationToYoloConverter:
     """Converts Label Studio bbox annotations to YOLO format."""
 
-    def __init__(
-        self, image_width: int | None = None, image_height: int | None = None
-    ):
+    def __init__(self, image_width: int | None = None, image_height: int | None = None):
         """
         Initialize converter.
 
@@ -157,7 +155,10 @@ class AnnotationToYoloConverter:
 
         classes_path = output_dir / "classes.txt"
         with open(classes_path, "w") as f:
-            f.writelines(f"{reverse_mapping[class_id]}\n" for class_id in sorted(reverse_mapping.keys()))
+            f.writelines(
+                f"{reverse_mapping[class_id]}\n"
+                for class_id in sorted(reverse_mapping.keys())
+            )
 
         logger.info(f"Saved classes file: {classes_path}")
         return classes_path
