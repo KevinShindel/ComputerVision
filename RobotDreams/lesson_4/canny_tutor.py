@@ -10,7 +10,7 @@ def callback(input):
 def canny_edge():
     root = os.getcwd()
     img_path = os.path.join(
-        root, "data/dji_fly_20240919_171150_122_1726758725363_photo_optimized.jpg"
+        root, "../images/yield.png"
     )
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
