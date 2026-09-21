@@ -1,0 +1,12 @@
+numpy==2.5.3
+opencv-python-headless<=4.14.0.94
+pydot==4.0.1
+supervision==0.30.3
+--extra-index-url https://download.pytorch.org/whl/cu128
+torch==2.14.0
+torchvision==0.29.0
+torchaudio==2.11.0+cu128
+ultralytics==8.4.155
+split-folders==0.6.1
+label-studio==1.23.0
+streamlit==1.64.0
