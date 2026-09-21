@@ -9,9 +9,7 @@ def callback(input):
 
 def canny_edge():
     root = os.getcwd()
-    img_path = os.path.join(
-        root, "../images/yield.png"
-    )
+    img_path = os.path.join(root, "../images/yield.png")
     img = cv2.imread(img_path)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
