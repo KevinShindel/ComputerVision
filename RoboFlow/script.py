@@ -11,16 +11,16 @@ def download_video() -> str:
 
 
 def main(
-    source_weights_path: str,
-    source_video_path: str | None = None,
-    target_video_path: str = "output.mp4",
-    confidence_threshold: float = 0.35,
-    iou_threshold: float = 0.5,
-    heatmap_alpha: float = 0.5,
-    radius: int = 25,
-    track_activation_threshold: float = 0.35,
-    track_seconds: int = 5,
-    minimum_matching_threshold: float = 0.99,
+        source_weights_path: str,
+        source_video_path: str | None = None,
+        target_video_path: str = "output.mp4",
+        confidence_threshold: float = 0.35,
+        iou_threshold: float = 0.5,
+        heatmap_alpha: float = 0.5,
+        radius: int = 25,
+        track_activation_threshold: float = 0.35,
+        track_seconds: int = 5,
+        minimum_matching_threshold: float = 0.99,
 ) -> None:
     """
     Heatmap and Tracking with Supervision.
@@ -37,11 +37,11 @@ def main(
         track_seconds: Number of seconds to buffer when a track is lost
         minimum_matching_threshold: Threshold for matching tracks with detections
     """
-    ### instantiate model
+    # instantiate model
     model = YOLO(source_weights_path)
     source_video_path = source_video_path or download_video()
 
-    ### heatmap config
+    # heatmap config
     heat_map_annotator = sv.HeatMapAnnotator(
         position=sv.Position.BOTTOM_CENTER,
         opacity=heatmap_alpha,
@@ -51,15 +51,15 @@ def main(
         low_hue=125,
     )
 
-    ### annotation config
+    # annotation config
     label_annotator = sv.LabelAnnotator(text_position=sv.Position.CENTER)
 
-    ### get the video fps
+    # get the video fps
     cap = cv2.VideoCapture(source_video_path)
     fps = int(cap.get(cv2.CAP_PROP_FPS))
     cap.release()
 
-    ### tracker config
+    # tracker config
     byte_tracker = ByteTrackTracker(
         track_activation_threshold=track_activation_threshold,
         lost_track_buffer=track_seconds * fps,
@@ -67,13 +67,13 @@ def main(
         frame_rate=fps,
     )
 
-    ### video config
+    # video config
     video_info = sv.VideoInfo.from_video_path(video_path=source_video_path)
     frames_generator = sv.get_video_frames_generator(
         source_path=source_video_path, stride=1
     )
 
-    ### Detect, track, annotate, save
+    # Detect, track, annotate, save
     with sv.VideoSink(target_path=target_video_path, video_info=video_info) as sink:
         for frame in frames_generator:
             result = model(
@@ -95,12 +95,12 @@ def main(
                 detections=detections,
             )
 
-            ### draw heatmap
+            # draw heatmap
             annotated_frame = heat_map_annotator.annotate(
                 scene=frame.copy(), detections=detections
             )
 
-            ### draw other attributes from `detections` object
+            # draw other attributes from `detections` object
             labels = [
                 f"#{tracker_id}" if tracker_id != -1 else ""
                 for tracker_id in detections.tracker_id

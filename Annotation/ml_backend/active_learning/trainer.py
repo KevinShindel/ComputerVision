@@ -235,7 +235,7 @@ names: {sorted_classes}
                 f"Starting training | epochs={self.epochs} | batch_size={self.batch_size} | "
                 f"device={self.device}"
             )
-            results = model.train(
+            model.train(
                 data=str(data_yaml),
                 epochs=self.epochs,
                 imgsz=self.imgsz,

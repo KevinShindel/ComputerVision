@@ -7,7 +7,6 @@ import os
 from pathlib import Path
 
 from label_studio_ml.api import init_app
-from model import YoloSamBackend
 
 logging.basicConfig(
     level=logging.INFO,
