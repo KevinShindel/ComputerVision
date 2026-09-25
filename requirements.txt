@@ -18,4 +18,4 @@ torchvision==0.29.0
 torchaudio==2.11.0+cu128
 trackers==2.6.0
 tqdm==4.70.1
-ultralytics==8.4.157
+ultralytics==8.4.159
