@@ -11,16 +11,16 @@ def download_video() -> str:
 
 
 def main(
-        source_weights_path: str,
-        source_video_path: str | None = None,
-        target_video_path: str = "output.mp4",
-        confidence_threshold: float = 0.35,
-        iou_threshold: float = 0.5,
-        heatmap_alpha: float = 0.5,
-        radius: int = 25,
-        track_activation_threshold: float = 0.35,
-        track_seconds: int = 5,
-        minimum_matching_threshold: float = 0.99,
+    source_weights_path: str,
+    source_video_path: str | None = None,
+    target_video_path: str = "output.mp4",
+    confidence_threshold: float = 0.35,
+    iou_threshold: float = 0.5,
+    heatmap_alpha: float = 0.5,
+    radius: int = 25,
+    track_activation_threshold: float = 0.35,
+    track_seconds: int = 5,
+    minimum_matching_threshold: float = 0.99,
 ) -> None:
     """
     Heatmap and Tracking with Supervision.
