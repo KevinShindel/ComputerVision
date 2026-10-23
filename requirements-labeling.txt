@@ -1,7 +1,7 @@
 numpy==2.5.4
 opencv-python-headless<=5.0.0.93
 pydot==4.0.1
-supervision==0.30.9
+supervision==0.31.1
 --extra-index-url https://download.pytorch.org/whl/cu128
 torch==2.14.1
 torchvision==0.29.1
