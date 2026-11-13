@@ -6,7 +6,7 @@ supervision==0.31.6
 torch==2.15.0
 torchvision==0.29.2
 torchaudio==2.11.1
-ultralytics==8.4.201
+ultralytics==8.4.209
 split-folders==0.6.1
 label-studio==1.23.2
 streamlit==1.67.0
